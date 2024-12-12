@@ -169,7 +169,7 @@ for j,p in enumerate(projects):
         print('----------- ExportPDF Finish: {:.2f} s\n'.format(timer()-start))
 
     projectData.extend([bck.genReportPerProject(p,disciplinesContractors[projectsAcroName[projectsFullName[j]]],projectsFullName[j],dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)])
-    projectScurve.extend([scurve.drawProject(dayOfAnalysis,p,disciplinesContractors[projectsAcroName[projectsFullName[j]]],projectsFullName[j],foldersEng,folderSup,projectsWithSUP)])
+    projectScurve.extend([scurve.drawProject(dayOfAnalysis,p,disciplinesContractors[projectsAcroName[projectsFullName[j]]],projectsFullName[j],foldersEng,folderSup,projectsWithSUP,approvedStatus)])
 
 print('---------- total DATA:')
 print('---------- len total DATA:',len(projectData))

@@ -337,7 +337,7 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
 
     return scurvePath
 
-def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,folderSup,projectsWithSup):
+def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,folderSup,projectsWithSup,approvedStatus):
 
     dir = os.path.join(projectDir,'00_ProjectReports')
     if not os.path.exists(dir):
@@ -372,14 +372,29 @@ def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,
         else:
             real = 0
             planned = 0
+            total = 0
+            issuedExpected = 0
+            issuedReal = 0
+            approvedExpected = 0
+            approvedReal = 0
+
             for d in disciplines:
                 futurePlanningDir = os.path.join(projectDir,d,'Input')
                 file, dayOfFile = bck.chooseFile(futurePlanningDir)
                 #print(file)
                 df = pd.read_csv(os.path.join(futurePlanningDir,file))
                 bck.parseTimeBD(df,'Expected Date')
+                bck.parseTimeBD(df,'Date 1st Issue')
+                bck.parseTimeBD(df,'Expected Approval Date')
                 #print(df)
-                planned += len(df[(df['Folder'].isin(foldersEng)) & (df['Expected Date_parsed'] <= dates[i])])
+                total += len(df[df['Folder'].isin(foldersEng)])
+                issuedExpected += len(df[(df['Folder'].isin(foldersEng)) & (df['Expected Date_parsed'] <= dates[i])])
+                issuedReal += len(df[(df['Folder'].isin(foldersEng)) & (df['Date 1st Issue_parsed'] <= dates[i])])
+                approvedExpected += len(df[(df['Folder'].isin(foldersEng)) & (df['Expected Approval Date_parsed'] <= dates[i])])
+                approvedReal += len(df[(df['Folder'].isin(foldersEng)) & (df['Workflow State'].isin(approvedStatus))])
+
+            real = 100 * ((weightIssued*issuedReal + weightApproved*approvedReal)/total)
+            planned = 100 * ((weightIssued*issuedExpected + weightApproved*approvedExpected)/total)
 
         if planned == 0:
             if len(progressPlanned) == 0:

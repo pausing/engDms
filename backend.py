@@ -366,18 +366,15 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
     weightIssued = 0.7
     weightApproved = 0.3
     for i in range(len(columns)-2): # all of the COLUMNS less SUM and SUM  [%]
-        totalDF.loc[5,columns[i]] = 100 * (totalDF.loc[1,columns[i]] * weightIssued + totalDF.loc[3,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]]
-        totalDF.loc[6,columns[i]] = 100 * (totalDF.loc[2,columns[i]] * weightIssued + totalDF.loc[4,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]]
+        if totalDF.loc[0,columns[i]] != 0:
+            totalDF.loc[5,columns[i]] = 100 * (totalDF.loc[1,columns[i]] * weightIssued + totalDF.loc[3,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]]
+            totalDF.loc[6,columns[i]] = 100 * (totalDF.loc[2,columns[i]] * weightIssued + totalDF.loc[4,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]]
 
     totalDF.loc[5,'SUM [%]'] = totalDF.loc[1,'SUM [%]'] * weightIssued + totalDF.loc[3,'SUM [%]'] * weightApproved
     totalDF.loc[6,'SUM [%]'] = totalDF.loc[2,'SUM [%]'] * weightIssued + totalDF.loc[4,'SUM [%]'] * weightApproved
     
-    totalDF['SUM [%]'] = totalDF['SUM [%]'].apply(lambda x : round(x,2))
-    totalDF.loc[5,columns] = totalDF.loc[5,columns].apply(lambda x: round(x,2))
-    totalDF.loc[6,columns] = totalDF.loc[6,columns].apply(lambda x: round(x,2))
+    #totalDF['SUM [%]'] = totalDF['SUM [%]'].apply(lambda x : round(x,2))
+    #totalDF.loc[5,columns] = totalDF.loc[5,columns].apply(lambda x: round(x,2))
+    #totalDF.loc[6,columns] = totalDF.loc[6,columns].apply(lambda x: round(x,2))
 
-    #print('----------------------------------- TOTAL DF')
-    #print(totalDF)
-    totalDF.astype(object)
-        
     return totalDF
