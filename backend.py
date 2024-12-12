@@ -311,15 +311,18 @@ def chooseFile(dir):
     return os.path.join(dir,files[-1]), dateFromFile(files[-1])
 
 def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,foldersEng,folderSup,projectsWithSUP):
+
+    items = ['TOTAL','ISSUED EXPECTED','ISSUED REAL','APPROVED EXPECTED','APPROVED REAL','TOTAL EXPECTED [%]','TOTAL REAL [%]']
+    columns = ['CIVIL','ELECTRICAL','ELECTROMECHANICAL','EQUIPMENT','SUM','SUM [%]']
     
     iniData = {
-        'ITEM': ['TOTAL','ISSUED EXPECTED','ISSUED REAL','APPROVED EXPECTED','APPROVED REAL'],
-        'CIVIL': [0,0,0,0,0],
-        'ELECTRICAL': [0,0,0,0,0],
-        'ELECTROMECHANICAL': [0,0,0,0,0],
-        'EQUIPMENT': [0,0,0,0,0],
-        'SUM': [0,0,0,0,0],
-        'SUM [%]': [0,0,0,0,0],
+        'ITEM': items,
+        'CIVIL': [0,0,0,0,0,0,0],
+        'ELECTRICAL': [0,0,0,0,0,0,0],
+        'ELECTROMECHANICAL': [0,0,0,0,0,0,0],
+        'EQUIPMENT': [0,0,0,0,0,0,0],
+        'SUM': [0,0,0,0,0,0,0],
+        'SUM [%]': [0,0,0,0,0,0,0],
     }
 
     # ini :
@@ -327,6 +330,7 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
     #print(totalDF)
 
     text = 'FolderPlan_{:04d}_{:02d}_{:02d}'.format(dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day)
+    dataAllDisciplines = []
 
     for d in disciplines:
         subDir = os.path.join(dirProject,d,'Excel')
@@ -334,9 +338,9 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
         for f in files:
             if text in f:
                 #print(f)
-                file = os.path.join(subDir,f)
-        
+                file = os.path.join(subDir,f)        
                 totalDiscipline = pd.read_excel(file)
+                dataAllDisciplines.extend([totalDiscipline])
                 #print(totalDiscipline)
 
                 if  (projectFullName in projectsWithSUP) & (d.find('SUP') != -1):
@@ -358,9 +362,22 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
         else:
             totalDF.loc[i,'SUM [%]'] = 100 * totalDF.loc[i,'SUM'] / totalDF.loc[0,'SUM']
     
+    # calculate total expected per category, ( 0.7 * issued exp (line 1) + 0.3 * approved expected (line 3) ) / total (line 0)
+    weightIssued = 0.7
+    weightApproved = 0.3
+    for i in range(len(columns)-2): # all of the COLUMNS less SUM and SUM  [%]
+        totalDF.loc[5,columns[i]] = 100 * (totalDF.loc[1,columns[i]] * weightIssued + totalDF.loc[3,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]]
+        totalDF.loc[6,columns[i]] = 100 * (totalDF.loc[2,columns[i]] * weightIssued + totalDF.loc[4,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]]
+
+    totalDF.loc[5,'SUM [%]'] = totalDF.loc[1,'SUM [%]'] * weightIssued + totalDF.loc[3,'SUM [%]'] * weightApproved
+    totalDF.loc[6,'SUM [%]'] = totalDF.loc[2,'SUM [%]'] * weightIssued + totalDF.loc[4,'SUM [%]'] * weightApproved
+    
     totalDF['SUM [%]'] = totalDF['SUM [%]'].apply(lambda x : round(x,2))
+    totalDF.loc[5,columns] = totalDF.loc[5,columns].apply(lambda x: round(x,2))
+    totalDF.loc[6,columns] = totalDF.loc[6,columns].apply(lambda x: round(x,2))
 
     #print('----------------------------------- TOTAL DF')
     #print(totalDF)
+    totalDF.astype(object)
         
     return totalDF
