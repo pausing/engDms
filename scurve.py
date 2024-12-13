@@ -361,7 +361,7 @@ def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,
 
     for i in range(len(dates)):
         if dates[i] <= dayOfAnalysis:
-            totalData = bck.genReportPerProject(projectDir,disciplines,projectFullName,dates[i],foldersEng,folderSup,projectsWithSup)
+            totalData = bck.genReportPerProject(projectDir,disciplines,projectFullName,dates[i],foldersEng,folderSup,projectsWithSup)[0]
             #print('\n----------------------------total data ----------------\n')
             #print(dates[i])
             #print(totalData)

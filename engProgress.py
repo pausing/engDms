@@ -116,7 +116,9 @@ print(projectsFullName)
 
 reports = []
 projectData = []
+projectDataPerDisciplines = []
 projectScurve = []
+
 for j,p in enumerate(projects):
     print('----')
     print(projectsFullName[j])
@@ -168,8 +170,10 @@ for j,p in enumerate(projects):
         bck.pdfExport.exportToPDF('Engineering Report {}, date: {}-{:02d}-{:02d}'.format(projectsFullName[j],dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day),titles,data,engReportFileTitle,scurvePath)
         print('----------- ExportPDF Finish: {:.2f} s\n'.format(timer()-start))
 
-    projectData.extend([bck.genReportPerProject(p,disciplinesContractors[projectsAcroName[projectsFullName[j]]],projectsFullName[j],dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)])
-    projectScurve.extend([scurve.drawProject(dayOfAnalysis,p,disciplinesContractors[projectsAcroName[projectsFullName[j]]],projectsFullName[j],foldersEng,folderSup,projectsWithSUP,approvedStatus)])
+    dataOfProject,disciplinesDF = bck.genReportPerProject(p,disciplinesContractors[projectsAcroName[projectsFullName[j]]],projectsFullName[j],dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)
+    projectData.extend([dataOfProject])
+    projectDataPerDisciplines.extend([disciplinesDF])
+    #projectScurve.extend([scurve.drawProject(dayOfAnalysis,p,disciplinesContractors[projectsAcroName[projectsFullName[j]]],projectsFullName[j],foldersEng,folderSup,projectsWithSUP,approvedStatus)])
 
 print('---------- total DATA:')
 print('---------- len total DATA:',len(projectData))
@@ -178,6 +182,7 @@ for i in range(len(projectData)):
     print(projectsFullName[i])
     print('\n')
     print(projectData[i])
+    print(projectDataPerDisciplines[i])
     print('\n')
 
 for i,r in enumerate(reports):
