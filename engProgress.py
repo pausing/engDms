@@ -170,20 +170,22 @@ for j,p in enumerate(projects):
         bck.pdfExport.exportToPDF('Engineering Report {}, date: {}-{:02d}-{:02d}'.format(projectsFullName[j],dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day),titles,data,engReportFileTitle,scurvePath)
         print('----------- ExportPDF Finish: {:.2f} s\n'.format(timer()-start))
 
-    dataOfProject,disciplinesDF = bck.genReportPerProject(p,disciplinesContractors[projectsAcroName[projectsFullName[j]]],projectsFullName[j],dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)
-    projectData.extend([dataOfProject])
-    projectDataPerDisciplines.extend([disciplinesDF])
-    projectScurve.extend([scurve.drawProject(dayOfAnalysis,p,disciplinesContractors[projectsAcroName[projectsFullName[j]]],projectsFullName[j],foldersEng,folderSup,projectsWithSUP,approvedStatus)])
+    if len(disciplinesContractors[projectsAcroName[projectsFullName[j]]]) != 0:
+        dataOfProject,disciplinesDF = bck.genReportPerProject(p,disciplinesContractors[projectsAcroName[projectsFullName[j]]],projectsFullName[j],dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)
+        projectData.extend([dataOfProject])
+        projectDataPerDisciplines.extend([disciplinesDF])
+        projectScurve.extend([scurve.drawProject(dayOfAnalysis,p,disciplinesContractors[projectsAcroName[projectsFullName[j]]],projectsFullName[j],foldersEng,folderSup,projectsWithSUP,approvedStatus)])
 
-print('---------- total DATA:')
-print('---------- len total DATA:',len(projectData))
-
-for i in range(len(projectData)):
+for i in range(len(projects)):
+    print('\n')
     print(projectsFullName[i])
-    print('\n')
-    print(projectData[i])
-    print(projectDataPerDisciplines[i])
-    print('\n')
+    if len(disciplinesContractors[projectsAcroName[projectsFullName[j]]]) != 0:
+        print('\n')
+        print(projectData[i])
+        print(projectDataPerDisciplines[i])
+        print('\n')
+    else:
+        print('\nNo contractors in this project\n')
 
 for i,r in enumerate(reports):
     completeDir = r

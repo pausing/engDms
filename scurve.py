@@ -380,6 +380,7 @@ def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,
 
             for d in disciplines:
                 futurePlanningDir = os.path.join(projectDir,d,'Input')
+                print('analyzing project {}, discipline {}, day {}'.format(projectFullName,d,dates[i]))
                 file, dayOfFile = bck.chooseFile(futurePlanningDir)
                 #print(file)
                 df = pd.read_csv(os.path.join(futurePlanningDir,file))
