@@ -179,7 +179,8 @@ for j,p in enumerate(projects):
 for i in range(len(projects)):
     print('\n')
     print(projectsFullName[i])
-    if len(disciplinesContractors[projectsAcroName[projectsFullName[j]]]) != 0:
+    print(disciplinesContractors[projectsAcroName[projectsFullName[i]]])
+    if len(disciplinesContractors[projectsAcroName[projectsFullName[i]]]) != 0:
         print('\n')
         print(projectData[i])
         print(projectDataPerDisciplines[i])
