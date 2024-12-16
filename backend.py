@@ -412,15 +412,13 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
 
     for i in range(len(columns)-2): # all of the COLUMNS less SUM and SUM  [%]
         if totalDF.loc[0,columns[i]] != 0:
-            totalDF.loc[5,columns[i]] = 100 * (totalDF.loc[1,columns[i]] * weightIssued + totalDF.loc[3,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]]
-            totalDF.loc[6,columns[i]] = 100 * (totalDF.loc[2,columns[i]] * weightIssued + totalDF.loc[4,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]]
+            totalDF.loc[5,columns[i]] = round(100 * (totalDF.loc[1,columns[i]] * weightIssued + totalDF.loc[3,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]],2)
+            totalDF.loc[6,columns[i]] = round(100 * (totalDF.loc[2,columns[i]] * weightIssued + totalDF.loc[4,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]],2)
 
     totalDF.loc[5,'SUM [%]'] = totalDF.loc[1,'SUM [%]'] * weightIssued + totalDF.loc[3,'SUM [%]'] * weightApproved
     totalDF.loc[6,'SUM [%]'] = totalDF.loc[2,'SUM [%]'] * weightIssued + totalDF.loc[4,'SUM [%]'] * weightApproved
     
     totalDF['SUM [%]'] = totalDF['SUM [%]'].apply(lambda x : round(x,2))
-    totalDF.loc[5,columns] = totalDF.loc[5,columns].apply(lambda x: round(x,2))
-    totalDF.loc[6,columns] = totalDF.loc[6,columns].apply(lambda x: round(x,2))
 
     totalDF.to_excel(os.path.join(dir,'{:04d}{:02d}{:02d}_TOTAL_{}.xlsx'.format(dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day,projectFullName)))
 

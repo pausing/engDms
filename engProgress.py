@@ -49,7 +49,7 @@ projectsAcroName = {
 }
 
 disciplines = {
-    'BDD':['01_BESS','02_HV_SDD'],
+    'BDD':['01_BESS','02_HV_SDD','03_EE_INT'],
     'SHA':['01_PV','02_HV','03_LT'],
     'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
     'DRA':['01_PV-PRE EXEC','02_EWA-HV','03_PV','04_HV','05_SUP'],
@@ -58,7 +58,7 @@ disciplines = {
 }
 
 disciplinesContractors = {
-    'BDD':['01_BESS','02_HV_SDD'],
+    'BDD':['01_BESS','02_HV_SDD','03_EE_INT'],
     'SHA':['01_PV','02_HV','03_LT'],
     'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
     'DRA':['03_PV','04_HV','05_SUP'],
@@ -183,6 +183,7 @@ for i in range(len(projects)):
     if len(disciplinesContractors[projectsAcroName[projectsFullName[i]]]) != 0:
         print('\n')
         print(projectData[i])
+        print('\n')
         print(projectDataPerDisciplines[i])
         print('\n')
     else:
