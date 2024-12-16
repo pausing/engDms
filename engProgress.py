@@ -118,6 +118,7 @@ reports = []
 projectData = []
 projectDataPerDisciplines = []
 projectScurve = []
+iniTime = timer()
 
 for j,p in enumerate(projects):
     print('----')
@@ -197,3 +198,5 @@ for i,r in enumerate(reports):
         shutil.copy(r,os.path.join(saveDir,fileName))
     except Exception as e:
         print('Error {}, file: {}'.format(e,fileName))
+
+print('Script finished in {:.2f} min'.format((timer() - iniTime)/60))
