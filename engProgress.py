@@ -8,11 +8,27 @@ import pdfExport
 from timeit import default_timer as timer
 import general as gen
 import multiprocessing
+import logging
+
+def configure_logging(project):
+    log_filename = 'log_{}.log'.format(project)
+    logger = logging.getLogger(project)
+    logger.setLevel(logging.INFO)
+    # Create file handler for the worker's log file
+    file_handler = logging.FileHandler(log_filename)
+    file_handler.setLevel(logging.INFO)
+    # Define the log format
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    file_handler.setFormatter(formatter)
+    # Add the handler to the logger
+    logger.addHandler(file_handler)
+    return logger
 
 def atlasdms(condesedInput):
 
-    project = condesedInput[0]
-    projectFullName = condesedInput[1]
+    project, projectFullName = condesedInput
+
+    logger = configure_logging(projectFullName)
 
     # general information
     projectsAcroName = gen.generalInfo()[1]
@@ -50,35 +66,33 @@ def atlasdms(condesedInput):
         else:
             folders = foldersEng
 
-        start = timer()
-        print('\n----------- Analyze File Start\n')
-        start = timer()
+        logger.info('{}: Analyze File Start'.format(d))
         start = timer()
         titles, data, engReportFileTitle = bck.analyzeFile(file,subDirOutput,approvedStatus,folders,foldersQA,projectFullName,projectsAcroName[projectFullName],d,dayOfAnalysis)
-        print('\n----------- Analyze File Finish: {:.2f} s\n'.format(timer()-start))
+        logger.info('{}: Analyze File Finish: {:.2f} s'.format(d,timer()-start))
 
         reports.append(engReportFileTitle)
 
+        logger.info('{}: Analyze Responsables and Categories Start'.format(d))
         start = timer()
-        print('\n----------- Analyze Resp and Cat Start\n')
         titles, data = bck.analyzeRespAndCat(file,projectFullName,d,approvedStatus,folders,titles,data,dayOfAnalysis)
-        print('\n----------- Analyze Resp and Cat Finish: {:.2f} s\n'.format(timer()-start))
+        logger.info('{}: Analyze Resp and Cat Finish: {:.2f} s'.format(d,timer()-start))
 
+        logger.info('{}: Scurve Start'.format(d))
         start = timer()
-        print('\n----------- SCurve Start\n')
         scurvePath = scurve.drawFull(file,projectFullName,d,dayOfAnalysis,folders,approvedStatus)
-        print('\n----------- SCurve Finish: {:.2f} s\n'.format(timer()-start))
+        logger.info('{}: SCurve Finish: {:.2f} s'.format(d,timer()-start))
 
+        logger.info('{}: OutputRev Start'.format(d))
         start = timer()
-        print('\n----------- OutputRev Start\n')
         data.extend([out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dayOfAnalysis)[0]])
         titles.extend(['OE analysis'])
-        print('\n----------- OutputRev Finish: {:.2f} s\n'.format(timer()-start))
+        logger.info('{}: OutputRev Finish: {:.2f} s'.format(d,timer()-start))
 
+        logger.info('{}: ExportPDF Start'.format(d))
         start = timer()
-        print('\n----------- ExportPDF Start\n')
         bck.pdfExport.exportToPDF('Engineering Report {}, date: {}-{:02d}-{:02d}'.format(projectFullName,dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day),titles,data,engReportFileTitle,scurvePath)
-        print('----------- ExportPDF Finish: {:.2f} s\n'.format(timer()-start))
+        logger.info('{}: ExportPDF Finish: {:.2f} s'.format(d,timer()-start))
 
     if len(disciplinesContractors[projectsAcroName[projectFullName]]) != 0:
         dataOfProject,disciplinesDF = bck.genReportPerProject(project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)
