@@ -15,7 +15,7 @@ def configure_logging(project):
     logger = logging.getLogger(project)
     logger.setLevel(logging.INFO)
     # Create file handler for the worker's log file
-    file_handler = logging.FileHandler(log_filename)
+    file_handler = logging.FileHandler(log_filename,mode='w')
     file_handler.setLevel(logging.INFO)
     # Define the log format
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
@@ -46,36 +46,33 @@ def atlasdms(condesedInput):
     projectDataPerDisciplines = []
     projectScurve = []
 
-    print('----')
-    print(projectFullName)
-    print('----')
+    print('start analysis of project: {}'.format(projectFullName))
 
     for d in disciplines[projectsAcroName[projectFullName]]:
-        print('----')
-        print(projectFullName + ' //// ' + d)
-        print('----')
+        
+        print('start analysis of discipline: {}'.format(d))
 
         subDir = os.path.join(project,d,'Input')
         subDirOutput = os.path.join(project,d,'Output')
-        bck.parsePlanDir(subDir)
+        bck.parsePlanDir(subDir,logger)
         file, dayOfAnalysis = bck.chooseFile(subDir)
 
         if  (projectFullName in projectsWithSUP) & (d.find('SUP') != -1):
-            print('project with SUP', projectFullName)
+            logger.info('project with SUP {}'.format(projectFullName))
             folders = folderSup[projectFullName]
         else:
             folders = foldersEng
 
         logger.info('{}: Analyze File Start'.format(d))
         start = timer()
-        titles, data, engReportFileTitle = bck.analyzeFile(file,subDirOutput,approvedStatus,folders,foldersQA,projectFullName,projectsAcroName[projectFullName],d,dayOfAnalysis)
+        titles, data, engReportFileTitle = bck.analyzeFile(file,subDirOutput,approvedStatus,folders,foldersQA,projectFullName,projectsAcroName[projectFullName],d,dayOfAnalysis,logger)
         logger.info('{}: Analyze File Finish: {:.2f} s'.format(d,timer()-start))
 
         reports.append(engReportFileTitle)
 
         logger.info('{}: Analyze Responsables and Categories Start'.format(d))
         start = timer()
-        titles, data = bck.analyzeRespAndCat(file,projectFullName,d,approvedStatus,folders,titles,data,dayOfAnalysis)
+        titles, data = bck.analyzeRespAndCat(file,projectFullName,d,approvedStatus,folders,titles,data,dayOfAnalysis,logger)
         logger.info('{}: Analyze Resp and Cat Finish: {:.2f} s'.format(d,timer()-start))
 
         logger.info('{}: Scurve Start'.format(d))
@@ -85,7 +82,7 @@ def atlasdms(condesedInput):
 
         logger.info('{}: OutputRev Start'.format(d))
         start = timer()
-        data.extend([out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dayOfAnalysis)[0]])
+        data.extend([out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dayOfAnalysis,logger)[0]])
         titles.extend(['OE analysis'])
         logger.info('{}: OutputRev Finish: {:.2f} s'.format(d,timer()-start))
 
@@ -131,14 +128,14 @@ if __name__ == "__main__":
         projects = [projecstDict[projToAnalyze]]
         projectsFullName = [list(projectsAcroName.keys())[list(projectsAcroName.values()).index(projToAnalyze)]]
 
-    print(projects)
-    print(projectsFullName)
+    #print(projects)
+    #print(projectsFullName)
 
     condensedProjectInformation = []
     for i in range(len(projects)):
         condensedProjectInformation.append((projects[i],projectsFullName[i]))
 
-    print(condensedProjectInformation)
+    #print(condensedProjectInformation)
 
     #reports = []
     #for info in condensedProjectInformation:

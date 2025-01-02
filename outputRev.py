@@ -25,10 +25,10 @@ def cleanColumns(file):
 
     return newfile
     
-def reviewOutput(directory,folders,approvedStatus,dayOfAnalysis):
+def reviewOutput(directory,folders,approvedStatus,dayOfAnalysis,logger):
     file = bck.chooseFile(directory)[0]
-    print('analyzing {}'.format(file))
-    bck.formatFile(file)
+    logger.info('reviewOutput - analyzing {}'.format(file))
+    bck.formatFile(file,logger)
     file = cleanColumns(file)
 
     bd = pd.read_csv(file)

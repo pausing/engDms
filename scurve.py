@@ -248,11 +248,11 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
         count = 0
         for f in foldersEng:
             count += len(bd[(bd['Folder'] == f) & (bd['Responsible'] == r)])
-        print(r,count)
+        #print(r,count)
         if count == 0:
             responsibles.remove(r)
     responsibles.sort()
-    print(responsibles)
+    #print(responsibles)
 
     #minDate = min(list(bd['Expected Date_parsed']))
     #maxDate = max(list(bd['Expected Date_parsed']))

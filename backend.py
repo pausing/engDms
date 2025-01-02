@@ -11,29 +11,31 @@ import numpy as np
 import outputRev as out
 import pdfExport
 
-def formatFile(file_path):
+def formatFile(file_path,logger):
     try:
         with open(file_path,'r+',encoding='utf-8') as txtFile:
             txt = txtFile.read()
             if txt.find(';') != -1:
+                logger.info('file wiht ;, replacing')
                 txt = txt.replace(',','_')
                 txt = txt.replace(';',',')
                 txtFile.seek(0)
                 txtFile.write(txt)
                 txtFile.truncate()
             else:
-                print('file {} already with commas'.format(file_path))
+                logger.info('file {} already with commas'.format(file_path))
     except:
         with open(file_path,'r+',encoding='ISO-8859-1') as txtFile:
             txt = txtFile.read()
             if txt.find(';') != -1:
+                logger.info('file wiht ;, replacing')
                 txt = txt.replace(',','_')
                 txt = txt.replace(';',',')
                 txtFile.seek(0)
                 txtFile.write(txt)
                 txtFile.truncate()
             else:
-                print('file {} already with commas'.format(file_path))
+                logger.info('file {} already with commas'.format(file_path))
 
 def parseTime(strTime):
     # date str 03/07/2023
@@ -50,10 +52,8 @@ def parseTimeBD(bd,title):
         else:
             bd.loc[i,title + '_parsed'] = parseTime(bd.loc[i,title])
 
-def printResults(titles,totals,IssuedExpected,IssuedReal,AppExpected,AppReal,responsible):
-    print('-----')
-    print(responsible)
-    print('-----')
+def printResults(titles,totals,IssuedExpected,IssuedReal,AppExpected,AppReal,responsible,logger):
+    logger.info(responsible)
     t = ['TOTAL']
     t.extend(totals)
     t.extend([sum(totals)])
@@ -81,10 +81,10 @@ def printResults(titles,totals,IssuedExpected,IssuedReal,AppExpected,AppReal,res
     h.extend(['SUM'])
     h.extend(['SUM [%]'])
 
-    print(tabulate(data,headers=h,tablefmt="grid"))
+    logger.info('\n' + tabulate(data,headers=h,tablefmt="grid"))
     return data,h
 
-def parseEspecialColumns(bd,outDf):
+def parseEspecialColumns(bd,outDf,logger):
 
     for i in range(len(bd)):
         try:
@@ -92,17 +92,16 @@ def parseEspecialColumns(bd,outDf):
             bd.loc[i,'CATEGORY'] = outDf.loc[outDf['Code'] == bd.loc[i,'Nomenclature']]['Category'].values[0]
             bd.loc[i,'SUBCATEGORY'] = outDf.loc[outDf['Code'] == bd.loc[i,'Nomenclature']]['Subcategory'].values[0]
         except:
-            print('Doc {}:{} not found in Output'.format(bd.loc[i,'Nomenclature'],bd.loc[i,'Description']))
+            logger.info('Doc {}:{} not found in Output'.format(bd.loc[i,'Nomenclature'],bd.loc[i,'Description']))
             bd.loc[i,'AREA'] = 'not def'
             bd.loc[i,'CATEGORY'] = 'not def'
             bd.loc[i,'SUBCATEGORY'] = 'not def'
 
-def parseDateInPlanFile(file):
-    print('Parsing file {}'.format(file))
+def parseDateInPlanFile(file,logger):
+    logger.info('Parsing file {}'.format(file))
     d = file[file.find('planejamento_') + len('planejamento_') : file.find('planejamento_') + len('planejamento_') + 2]
     m = file[file.find('planejamento_') + len('planejamento_') + 2 : file.find('planejamento_') + len('planejamento_') + 4]
     y = file[file.find('planejamento_') + len('planejamento_') + 4 : file.find('planejamento_') + len('planejamento_') + 8]
-    print(d,m,y)
     return y,m,d
 
 def dateFromFile(file):
@@ -111,14 +110,14 @@ def dateFromFile(file):
     d = int(file[6:8])
     return date(y,m,d)
 
-def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,project,projectAcro,disciplina,dateOfAnalysis):
+def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,project,projectAcro,disciplina,dateOfAnalysis,logger):
 
-    formatFile(fileToAnalyze)
+    formatFile(fileToAnalyze,logger)
     bd = pd.read_csv(fileToAnalyze)
     # parse information Column Custom Fields
-    outDf = out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dateOfAnalysis)[1]
+    outDf = out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dateOfAnalysis,logger)[1]
     #parseEspecialColumns(bd,projectAcro,keyWordCol,disciplina)
-    parseEspecialColumns(bd,outDf)
+    parseEspecialColumns(bd,outDf,logger)
 
     listOfData = []
     listOfTitles = []
@@ -139,17 +138,12 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
     # Check which Responsibles have documents in the Engineering Folders
     responsibles = list(set(bd['Responsible']))
     for r in responsibles:
-        count = 0
-        for f in foldersEng:
-            count += len(bd[(bd['Folder'] == f) & (bd['Responsible'] == r)])
-        print(r,count)
+        count = len(bd[(bd['Folder'].isin(foldersEng)) & (bd['Responsible'] == r)])
+        logger.info('responsible: {}, number of documents {}'.format(r,count))
         if count == 0:
             responsibles.remove(r)
     responsibles.sort()
-    print('Responsibles: ',responsibles)
-
-    #dateOfAnalysis = date(date.today().year,date.today().month,date.today().day)
-    #dateOfAnalysis = dayOfAnalysis
+    logger.info('Responsibles: {}'.format(responsibles))
 
     # Table of TOTALS
     doc1stRevPerFolder = []
@@ -164,8 +158,7 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
         docApprExpectedPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Expected Approval Date_parsed'] <= dateOfAnalysis)])])
         docApprRealPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Workflow State'].isin(approvedStatus))])])
 
-    print('Date of analysis: {}'.format(dateOfAnalysis))
-    data, headers = printResults(foldersEng,docTotalsPerFolder,docExpectedPerFolder,doc1stRevPerFolder,docApprExpectedPerFolder,docApprRealPerFolder, 'Total')
+    data, headers = printResults(foldersEng,docTotalsPerFolder,docExpectedPerFolder,doc1stRevPerFolder,docApprExpectedPerFolder,docApprRealPerFolder,'Total',logger)
 
     dataPd = pd.DataFrame(data,columns=headers)
     fileTitle = 'FolderPlan_{:04d}_{:02d}_{:02d}_{}_{}_Total.xlsx'.format(dateOfAnalysis.year,dateOfAnalysis.month,dateOfAnalysis.day,project,disciplina)
@@ -189,21 +182,20 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
             docApprExpectedPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Expected Approval Date_parsed'] <= dateOfAnalysis) & (bd['Responsible'] == r) ])])
             docApprRealPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Workflow State'].isin(approvedStatus)) & (bd['Responsible'] == r) ])])
 
-        print('Date of analysis: {}'.format(dateOfAnalysis))
-        #print(data)
-        data, headers = printResults(foldersEng,docTotalsPerFolder,docExpectedPerFolder,doc1stRevPerFolder,docApprExpectedPerFolder,docApprRealPerFolder, r)
+        data, headers = printResults(foldersEng,docTotalsPerFolder,docExpectedPerFolder,doc1stRevPerFolder,docApprExpectedPerFolder,docApprRealPerFolder,r,logger)
 
         dataPd = pd.DataFrame(data,columns=headers)
-        #dataPd.to_excel(os.path.join(ExcelDir,fileTitle))
+
         listOfData.extend([dataPd])
         listOfTitles.extend([r])
     return listOfTitles, listOfData,engReportFileTitle
 
-def analyzeRespAndCat(fileToAnalyze,project,disciplina,approvedStatus,foldersEng,titles,Alldata,dayOfAnalysis):
+def analyzeRespAndCat(fileToAnalyze,project,disciplina,approvedStatus,foldersEng,titles,Alldata,dayOfAnalysis,logger):
     dateOfAnalysis = dayOfAnalysis
     ExcelDir = os.path.join(os.path.dirname(fileToAnalyze),'..','Excel')
     bd = pd.read_excel(os.path.join(ExcelDir,fileToAnalyze.split(os.sep)[-1][:-4] + '.xlsx'))
 
+    # TODO make generic
     for title in ['Expected Date_parsed','Date 1st Issue_parsed','Expected Approval Date_parsed','Approval Date_parsed']:
         for i in range(len(bd)):
             if bd.loc[i,title] == '--':
@@ -213,7 +205,14 @@ def analyzeRespAndCat(fileToAnalyze,project,disciplina,approvedStatus,foldersEng
 
     #print(bd[bd['Folder'].isin(foldersEng)]['Responsible'])
     responsibles = list(set(bd[bd['Folder'].isin(foldersEng)]['Responsible']))
+    logger.info('responsibles: {}'.format(responsibles))
+    for r in responsibles:
+        count = len(bd[(bd['Folder'].isin(foldersEng)) & (bd['Responsible'] == r)])
+        logger.info('responsible: {}, number of documents {}'.format(r,count))
+        if count == 0:
+            responsibles.remove(r)
     responsibles.sort()
+    logger.info('responsibles: {}'.format(responsibles))
 
     workFlowStatus = list(set(bd['Workflow State']))
     workFlowStatus.sort()
@@ -224,12 +223,12 @@ def analyzeRespAndCat(fileToAnalyze,project,disciplina,approvedStatus,foldersEng
 
     subcategories = []
     for i in range(len(responsibles)):
-        print(responsibles[i])
+        logger.info(responsibles[i])
         subCategoriesArea = []
         for j in range(len(areas[i])):
-            print(areas[i][j])
+            logger.info(areas[i][j])
             subCategoriesAreaJRespI = list(set(bd[(bd['Responsible'] == responsibles[i]) & (bd['AREA'] == areas[i][j]) & (bd['Folder'].isin(foldersEng))]['SUBCATEGORY']))
-            print(subCategoriesAreaJRespI)
+            logger.info(subCategoriesAreaJRespI)
             subCategoriesAreaJRespI.sort()
             subCategoriesArea.append(subCategoriesAreaJRespI)
         subcategories.append(subCategoriesArea)
@@ -269,7 +268,7 @@ def analyzeRespAndCat(fileToAnalyze,project,disciplina,approvedStatus,foldersEng
     
     #Clean Issued For Construction_ state
     if 'Issued For Construction_' in h:
-        print('Issued For Construction_ found!!')
+        logger.info('Issued For Construction_ found!!')
         if 'Issued For Construction' in h:
             dataPd['Issued For Construction'] = dataPd['Issued For Construction'] + dataPd['Issued For Construction_']
         else:
@@ -285,19 +284,15 @@ def analyzeRespAndCat(fileToAnalyze,project,disciplina,approvedStatus,foldersEng
     Alldata.extend([dataPd])
     return titles, Alldata
 
-def parsePlanDir(dir):
+def parsePlanDir(dir,logger):
     files = os.listdir(dir)
     for f in files:
         if isfile(os.path.join(dir,f)) and f[-3:] == 'csv':
             if (f[0:4] == '2024') or (f[0:4] == '2025'):
                 continue
-                print('File: {} ok'.format(f))
             else:
-                y,m,d = parseDateInPlanFile(os.path.join(dir,f))
-                print(y,m,d)
-                print('renaming: ')
-                print(os.path.join(dir,f))
-                print(os.path.join(dir,y+m+d+'_'+f))
+                y,m,d = parseDateInPlanFile(os.path.join(dir,f),logger)
+                logger.info('remaning: {} to {}'.format(f,y+m+d+'_'+f))
                 os.rename(os.path.join(dir,f),os.path.join(dir,y+m+d+'_'+f))
 
 def chooseFile(dir):
