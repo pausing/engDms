@@ -250,20 +250,34 @@ def analyzeRespAndCat(fileToAnalyze,project,disciplina,approvedStatus,foldersEng
         wStatus = []
         for w in workFlowStatus:
             wStatus.extend ( [len(bd[(bd['Responsible'] == data[i][0]) & (bd['AREA'] == data[i][1]) & (bd['SUBCATEGORY'] == data[i][2]) & (bd['Workflow State'] == w) & bd['Folder'].isin(foldersEng)])])
+        firstExpDate = bd[(bd['Responsible'] == data[i][0]) & (bd['AREA'] == data[i][1]) & (bd['SUBCATEGORY'] == data[i][2]) & bd['Folder'].isin(foldersEng)]['Expected Date_parsed'].min()
+        lastExpDate = bd[(bd['Responsible'] == data[i][0]) & (bd['AREA'] == data[i][1]) & (bd['SUBCATEGORY'] == data[i][2]) & bd['Folder'].isin(foldersEng)]['Expected Date_parsed'].max()
+
         data[i].extend([t,e,r,ae,ar])
         data[i].extend(wStatus)
+        data[i].extend([firstExpDate,lastExpDate])
+
+
     h = ['RESP','AREA','SUBCAT','TOTAL','ISS EXP','ISS REAL','APP EXP','APP REAL'] 
     h.extend(workFlowStatus)
+    h.extend(['1stExpDate','LastExpDate'])
     #print(tabulate(data,headers=h,tablefmt="grid"))
     dataPd = pd.DataFrame(data,columns=h)
     #Subtotal per RESP
     h.pop(h.index('RESP'))
     h.pop(h.index('AREA'))
     h.pop(h.index('SUBCAT'))
+    h.pop(h.index('1stExpDate'))
+    h.pop(h.index('LastExpDate'))
+
     for r in responsibles:
         newLine =	{'RESP': r + ' (SUM)', 'AREA': 'SUBTOTAL', 'SUBCAT': 'SUBTOTAL'}
         for col in h:
             newLine[col] = dataPd[dataPd['RESP'] == r][col].sum()
+        
+        newLine['1stExpDate'] = '--'
+        newLine['LastExpDate'] = '--'
+        
         dataPd.loc[len(dataPd)] = newLine
     
     #Clean Issued For Construction_ state
@@ -273,8 +287,18 @@ def analyzeRespAndCat(fileToAnalyze,project,disciplina,approvedStatus,foldersEng
             dataPd['Issued For Construction'] = dataPd['Issued For Construction'] + dataPd['Issued For Construction_']
         else:
             dataPd['Issued For Construction'] = dataPd['Issued For Construction_']  
+            h.append('Issued For Construction')
         dataPd.drop('Issued For Construction_',axis=1,inplace=True)
         h.remove("Issued For Construction_")
+    
+    columns = list(dataPd.columns.values)
+    columns.remove('1stExpDate')
+    columns.remove('LastExpDate')
+
+    columns.append('1stExpDate')
+    columns.append('LastExpDate')
+
+    dataPd = dataPd[columns]
     
     dataPd.sort_values(by=['RESP','AREA','SUBCAT'],inplace=True)
     dataPd = dataPd.reset_index(drop=True)

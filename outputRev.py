@@ -65,7 +65,7 @@ def reviewOutput(directory,folders,approvedStatus,dayOfAnalysis,logger):
     bd['DaysNoAnswer'] = dayOfAnalysis - bd['LAST ISS']
     statusToCheck = ['For Analysis','Pre analysis']
     bdFiltered = bd[(bd['Folder'].isin(folders)) & ((bd['Status'].isin(statusToCheck)))]
-    bdFiltered.sort_values(by=['DaysNoAnswer'],inplace=True)
+    bdFiltered = bdFiltered.sort_values(by=['DaysNoAnswer'])
     bdFiltered = bdFiltered.reset_index(drop=True)
     bdFiltered.insert(0,'Item',range(1,len(bdFiltered)+1),True)
 

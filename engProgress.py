@@ -50,7 +50,7 @@ def atlasdms(condesedInput):
 
     for d in disciplines[projectsAcroName[projectFullName]]:
         
-        print('start analysis of discipline: {}'.format(d))
+        print('start analysis project: {}, discipline: {}'.format(projectFullName,d))
 
         subDir = os.path.join(project,d,'Input')
         subDirOutput = os.path.join(project,d,'Output')
@@ -88,7 +88,7 @@ def atlasdms(condesedInput):
 
         logger.info('{}: ExportPDF Start'.format(d))
         start = timer()
-        bck.pdfExport.exportToPDF('Engineering Report {}, date: {}-{:02d}-{:02d}'.format(projectFullName,dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day),titles,data,engReportFileTitle,scurvePath)
+        bck.pdfExport.exportToPDF('Engineering Report {}, date: {}-{:02d}-{:02d}'.format(projectFullName,dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day),titles,data,engReportFileTitle,scurvePath,logger)
         logger.info('{}: ExportPDF Finish: {:.2f} s'.format(d,timer()-start))
 
     if len(disciplinesContractors[projectsAcroName[projectFullName]]) != 0:

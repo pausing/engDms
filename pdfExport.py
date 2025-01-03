@@ -1,4 +1,5 @@
 from fpdf import FPDF
+from timeit import default_timer as timer
 
 class PDF(FPDF):
     def header(self):
@@ -22,7 +23,7 @@ class PDF(FPDF):
         # Setting font: helvetica italic 8
         self.set_font("Arial", "I", 8)
         # Printing page number:
-        self.cell(0, 10, f"Page {self.page_no()}/{len(self.pages)}", align="C")
+        self.cell(0, 10, f"Page {self.page_no()}", align="C")
 
 def output_df_to_pdf(pdf,df,fontSize):
 
@@ -86,7 +87,7 @@ def output_df_to_pdf(pdf,df,fontSize):
             i += 1
         pdf.ln(table_cell_height)
 
-def exportToPDF(Title,titles,tables,fileTitle,scurvePath):
+def exportToPDF(Title,titles,tables,fileTitle,scurvePath,logger):
 
     pdf = PDF()
     pdf.add_page()
@@ -99,6 +100,8 @@ def exportToPDF(Title,titles,tables,fileTitle,scurvePath):
 
     pdf.ln(20)
 
+    logger.info('start table section of pdf export')
+    start = timer()
     i = 0
     for t in tables:
         fontSize = 6
@@ -112,9 +115,13 @@ def exportToPDF(Title,titles,tables,fileTitle,scurvePath):
         pdf.ln(10)
         output_df_to_pdf(pdf,t,fontSize)
         i += 1
+    logger.info('finish table section of pdf export: {}s'.format(timer()-start))
 
+    logger.info('start image section of pdf export')
+    start = timer()
     for image in scurvePath:
         pdf.add_page(orientation='landscape')
         pdf.image(image,10,10,220)
+    logger.info('finish image section of pdf export: {}s'.format(timer()-start))
 
     pdf.output(fileTitle,'F')

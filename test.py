@@ -1,10 +1,18 @@
-file = '04_UFV_LUIZ_CARLOS_PV_AREA_B-planejamento_09072024_082827_9367.csv'
-posRef = file.find('planejamento_')
-lenKeyWord = len('planejamento_')
-posIni = posRef + lenKeyWord
-print(file[posIni:posIni+2])
-print(file[posIni+2:posIni+2+2])
-print(file[posIni+4:posIni+4+4])
-d = file[file.find('planejamento_') + len('planejamento_') : file.find('planejamento_') + len('planejamento_') + 2]
-m = file[file.find('planejamento_') + len('planejamento_') + 3 : file.find('planejamento_') + len('planejamento_') + 3 + 2]
-y = file[file.find('planejamento_') + len('planejamento_') + 3 + 3 : file.find('planejamento_') + len('planejamento_') + 3 + 3 + 4]
+import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({
+'col1': ['A', 'A', 'B', np.nan, 'D', 'C'],
+'col2': [2, 1, 9, 8, 7, 4],
+'col3': [0, 1, 9, 4, 2, 3],
+'col4': ['a', 'B', 'c', 'D', 'e', 'F']
+})
+
+print(df)
+
+#df.sort_values(by=['col2'],inplace=True)
+df = df.sort_values(by=['col2'])
+
+print(df)
+
+df.to_csv('test.csv')

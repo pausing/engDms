@@ -228,7 +228,7 @@ def scurveGeneral(bd,minDate,maxDate,approvedStatus,excelDir,project,discipline,
     ax.legend(loc='upper left',fontsize='small')
     ax.set_yticks(np.arange(0,maxVal,5))
 
-    path = os.path.join(excelDir,'ProgressScurve {}_{}_{}_{}_{}.png'.format(project,discipline,dateOfAnalysis.year,dateOfAnalysis.month,dateOfAnalysis.day))
+    path = os.path.join(excelDir,'ProgressScurve {}_{}_{}_{}_{}.jpg'.format(project,discipline,dateOfAnalysis.year,dateOfAnalysis.month,dateOfAnalysis.day))
 
     fig.savefig(path,bbox_inches='tight')
 
@@ -331,7 +331,7 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
                         ax[i,j].plot([dateOfAnalysis + timedelta(d),dateOfAnalysis + timedelta(d)],[0,maxVal[2*i+j]],'g--',linewidth=1)
                 ax[i,j].legend(loc='upper left',fontsize='small')
                 ax[i,j].set_yticks(np.arange(0,maxVal[2*i+j],5))
-        path = os.path.join(ExcelDir,'scurve {}_{}_{}_{}_{}_{}.png'.format(project,discipline,r,dateOfAnalysis.year,dateOfAnalysis.month,dateOfAnalysis.day))
+        path = os.path.join(ExcelDir,'scurve {}_{}_{}_{}_{}_{}.jpg'.format(project,discipline,r,dateOfAnalysis.year,dateOfAnalysis.month,dateOfAnalysis.day))
         scurvePath.extend([path])
         fig.savefig(path,bbox_inches='tight')
 
