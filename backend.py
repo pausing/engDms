@@ -1,20 +1,21 @@
 import warnings
 warnings.simplefilter(action = 'ignore',category=FutureWarning)
-import matplotlib.pyplot as plt
 import pandas as pd
 from datetime import datetime,timedelta,date
 import datetime as dd
 from tabulate import tabulate
 import os
 from os.path import isfile
-import numpy as np
 import outputRev as out
+import chardet
 import pdfExport
 
 def formatFile(file_path,logger):
+
     try:
-        with open(file_path,'r+',encoding='utf-8') as txtFile:
+        with open(file_path,'r+',encoding='utf-8', errors='ignore') as txtFile:
             txt = txtFile.read()
+            logger.info('file: {} opened')
             if txt.find(';') != -1:
                 logger.info('file wiht ;, replacing')
                 txt = txt.replace(',','_')
@@ -113,6 +114,7 @@ def dateFromFile(file):
 def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,project,projectAcro,disciplina,dateOfAnalysis,logger):
 
     formatFile(fileToAnalyze,logger)
+    #print(fileToAnalyze)
     bd = pd.read_csv(fileToAnalyze)
     # parse information Column Custom Fields
     outDf = out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dateOfAnalysis,logger)[1]

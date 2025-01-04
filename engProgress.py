@@ -10,8 +10,8 @@ import general as gen
 import multiprocessing
 import logging
 
-def configure_logging(project):
-    log_filename = 'log_{}.log'.format(project)
+def configure_logging(project,d):
+    log_filename = 'log_{}_{}.log'.format(project,d)
     logger = logging.getLogger(project)
     logger.setLevel(logging.INFO)
     # Create file handler for the worker's log file
@@ -26,9 +26,9 @@ def configure_logging(project):
 
 def atlasdms(condesedInput):
 
-    project, projectFullName = condesedInput
+    project, projectFullName, d = condesedInput
 
-    logger = configure_logging(projectFullName)
+    logger = configure_logging(projectFullName,d)
 
     # general information
     projectsAcroName = gen.generalInfo()[1]
@@ -45,57 +45,56 @@ def atlasdms(condesedInput):
     projectData = []
     projectDataPerDisciplines = []
     projectScurve = []
-
-    print('start analysis of project: {}'.format(projectFullName))
-
-    for d in disciplines[projectsAcroName[projectFullName]]:
         
-        print('start analysis project: {}, discipline: {}'.format(projectFullName,d))
+    start = timer()
+    print('start analysis project: {}, discipline: {}'.format(projectFullName,d))
 
-        subDir = os.path.join(project,d,'Input')
-        subDirOutput = os.path.join(project,d,'Output')
-        bck.parsePlanDir(subDir,logger)
-        file, dayOfAnalysis = bck.chooseFile(subDir)
+    subDir = os.path.join(project,d,'Input')
+    subDirOutput = os.path.join(project,d,'Output')
+    bck.parsePlanDir(subDir,logger)
+    file, dayOfAnalysis = bck.chooseFile(subDir)
 
-        if  (projectFullName in projectsWithSUP) & (d.find('SUP') != -1):
-            logger.info('project with SUP {}'.format(projectFullName))
-            folders = folderSup[projectFullName]
-        else:
-            folders = foldersEng
+    if  (projectFullName in projectsWithSUP) & (d.find('SUP') != -1):
+        logger.info('project with SUP {}'.format(projectFullName))
+        folders = folderSup[projectFullName]
+    else:
+        folders = foldersEng
 
-        logger.info('{}: Analyze File Start'.format(d))
-        start = timer()
-        titles, data, engReportFileTitle = bck.analyzeFile(file,subDirOutput,approvedStatus,folders,foldersQA,projectFullName,projectsAcroName[projectFullName],d,dayOfAnalysis,logger)
-        logger.info('{}: Analyze File Finish: {:.2f} s'.format(d,timer()-start))
+    logger.info('{}: Analyze File Start'.format(d))
+    start = timer()
+    titles, data, engReportFileTitle = bck.analyzeFile(file,subDirOutput,approvedStatus,folders,foldersQA,projectFullName,projectsAcroName[projectFullName],d,dayOfAnalysis,logger)
+    logger.info('{}: Analyze File Finish: {:.2f} s'.format(d,timer()-start))
 
-        reports.append(engReportFileTitle)
+    reports.append(engReportFileTitle)
 
-        logger.info('{}: Analyze Responsables and Categories Start'.format(d))
-        start = timer()
-        titles, data = bck.analyzeRespAndCat(file,projectFullName,d,approvedStatus,folders,titles,data,dayOfAnalysis,logger)
-        logger.info('{}: Analyze Resp and Cat Finish: {:.2f} s'.format(d,timer()-start))
+    logger.info('{}: Analyze Responsables and Categories Start'.format(d))
+    start = timer()
+    titles, data = bck.analyzeRespAndCat(file,projectFullName,d,approvedStatus,folders,titles,data,dayOfAnalysis,logger)
+    logger.info('{}: Analyze Resp and Cat Finish: {:.2f} s'.format(d,timer()-start))
 
-        logger.info('{}: Scurve Start'.format(d))
-        start = timer()
-        scurvePath = scurve.drawFull(file,projectFullName,d,dayOfAnalysis,folders,approvedStatus)
-        logger.info('{}: SCurve Finish: {:.2f} s'.format(d,timer()-start))
+    logger.info('{}: Scurve Start'.format(d))
+    start = timer()
+    scurvePath = scurve.drawFull(file,projectFullName,d,dayOfAnalysis,folders,approvedStatus)
+    logger.info('{}: SCurve Finish: {:.2f} s'.format(d,timer()-start))
 
-        logger.info('{}: OutputRev Start'.format(d))
-        start = timer()
-        data.extend([out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dayOfAnalysis,logger)[0]])
-        titles.extend(['OE analysis'])
-        logger.info('{}: OutputRev Finish: {:.2f} s'.format(d,timer()-start))
+    logger.info('{}: OutputRev Start'.format(d))
+    start = timer()
+    data.extend([out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dayOfAnalysis,logger)[0]])
+    titles.extend(['OE analysis'])
+    logger.info('{}: OutputRev Finish: {:.2f} s'.format(d,timer()-start))
 
-        logger.info('{}: ExportPDF Start'.format(d))
-        start = timer()
-        bck.pdfExport.exportToPDF('Engineering Report {}, date: {}-{:02d}-{:02d}'.format(projectFullName,dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day),titles,data,engReportFileTitle,scurvePath,logger)
-        logger.info('{}: ExportPDF Finish: {:.2f} s'.format(d,timer()-start))
+    logger.info('{}: ExportPDF Start'.format(d))
+    start = timer()
+    bck.pdfExport.exportToPDF('Engineering Report {}, date: {}-{:02d}-{:02d}'.format(projectFullName,dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day),titles,data,engReportFileTitle,scurvePath,logger)
+    logger.info('{}: ExportPDF Finish: {:.2f} s'.format(d,timer()-start))
 
-    if len(disciplinesContractors[projectsAcroName[projectFullName]]) != 0:
-        dataOfProject,disciplinesDF = bck.genReportPerProject(project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)
-        projectData.extend([dataOfProject])
-        projectDataPerDisciplines.extend([disciplinesDF])
-        projectScurve.extend([scurve.drawProject(dayOfAnalysis,project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,foldersEng,folderSup,projectsWithSUP,approvedStatus)])
+    #if len(disciplinesContractors[projectsAcroName[projectFullName]]) != 0:
+        #dataOfProject,disciplinesDF = bck.genReportPerProject(project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)
+        #projectData.extend([dataOfProject])
+        #projectDataPerDisciplines.extend([disciplinesDF])
+        #projectScurve.extend([scurve.drawProject(dayOfAnalysis,project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,foldersEng,folderSup,projectsWithSUP,approvedStatus)])
+    
+    print('finish analysis project: {}, discipline: {} in {:.2f} s'.format(projectFullName,d,timer()-start))
 
     return reports
 
@@ -130,12 +129,12 @@ if __name__ == "__main__":
 
     #print(projects)
     #print(projectsFullName)
-
+    
     condensedProjectInformation = []
-    for i in range(len(projects)):
-        condensedProjectInformation.append((projects[i],projectsFullName[i]))
-
-    #print(condensedProjectInformation)
+    disciplines = gen.generalInfo()[2]
+    for i in range(len(projectsFullName)):
+        for j in range(len(disciplines[projectsAcroName[projectsFullName[i]]])):
+            condensedProjectInformation.append((projects[i],projectsFullName[i],disciplines[projectsAcroName[projectsFullName[i]]][j]))
 
     #reports = []
     #for info in condensedProjectInformation:
