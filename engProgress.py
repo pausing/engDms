@@ -41,12 +41,7 @@ def atlasdms(condesedInput):
     foldersEng = gen.colaborativoInformation()[1]
     foldersQA = gen.colaborativoInformation()[2]
 
-    reports = []
-    projectData = []
-    projectDataPerDisciplines = []
-    projectScurve = []
-        
-    start = timer()
+    startTotal = timer()
     print('start analysis project: {}, discipline: {}'.format(projectFullName,d))
 
     subDir = os.path.join(project,d,'Input')
@@ -65,7 +60,7 @@ def atlasdms(condesedInput):
     titles, data, engReportFileTitle = bck.analyzeFile(file,subDirOutput,approvedStatus,folders,foldersQA,projectFullName,projectsAcroName[projectFullName],d,dayOfAnalysis,logger)
     logger.info('{}: Analyze File Finish: {:.2f} s'.format(d,timer()-start))
 
-    reports.append(engReportFileTitle)
+    report = engReportFileTitle
 
     logger.info('{}: Analyze Responsables and Categories Start'.format(d))
     start = timer()
@@ -87,16 +82,43 @@ def atlasdms(condesedInput):
     start = timer()
     bck.pdfExport.exportToPDF('Engineering Report {}, date: {}-{:02d}-{:02d}'.format(projectFullName,dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day),titles,data,engReportFileTitle,scurvePath,logger)
     logger.info('{}: ExportPDF Finish: {:.2f} s'.format(d,timer()-start))
-
-    #if len(disciplinesContractors[projectsAcroName[projectFullName]]) != 0:
-        #dataOfProject,disciplinesDF = bck.genReportPerProject(project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)
-        #projectData.extend([dataOfProject])
-        #projectDataPerDisciplines.extend([disciplinesDF])
-        #projectScurve.extend([scurve.drawProject(dayOfAnalysis,project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,foldersEng,folderSup,projectsWithSUP,approvedStatus)])
     
-    print('finish analysis project: {}, discipline: {} in {:.2f} s'.format(projectFullName,d,timer()-start))
+    print('finish analysis project: {}, discipline: {} in {:.2f} s'.format(projectFullName,d,timer()-startTotal))
 
-    return reports
+    return report
+
+def generalAnalysisContractorProjects(information):
+
+    start = timer()
+
+    project, projectFullName = information
+
+    print('start analysis full project {}'.format(projectFullName))
+
+    projectsAcroName = gen.generalInfo()[1]
+    disciplinesContractors = gen.generalInfo()[3]
+
+    d = disciplinesContractors[projectsAcroName[projectFullName]][0]
+    
+    subDir = os.path.join(project,d,'Input')
+    dayOfAnalysis = bck.chooseFile(subDir)[1]
+    projectsWithSUP = gen.generalInfo()[4]
+    folderSup = gen.generalInfo()[5]
+    foldersEng = gen.colaborativoInformation()[1]
+    approvedStatus = gen.colaborativoInformation()[0]
+
+    if  (projectFullName in projectsWithSUP) & (d.find('SUP') != -1):
+        folders = folderSup[projectFullName]
+    else:
+        folders = foldersEng
+
+    dataOfProject,disciplinesDF = bck.genReportPerProject(project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)
+    projectScurve = scurve.drawProject(dayOfAnalysis,project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,foldersEng,folderSup,projectsWithSUP,approvedStatus)
+    projectData = (dataOfProject,disciplinesDF,projectScurve)
+
+    print('finish analysis full project {} in {:.2f} s'.format(projectFullName,timer()-start))
+
+    return projectData
 
 if __name__ == "__main__":
 
@@ -113,6 +135,7 @@ if __name__ == "__main__":
     # let the user decide which project analyze
     projectsFullName = gen.generalInfo()[0]
     projectsAcroName = gen.generalInfo()[1]
+    disciplinesContractors = gen.generalInfo()[3]
 
     listAcroNames = list(projectsAcroName.values())
     listAcroNames.extend(['ALL'])
@@ -126,9 +149,6 @@ if __name__ == "__main__":
     if projToAnalyze != 'ALL':
         projects = [projecstDict[projToAnalyze]]
         projectsFullName = [list(projectsAcroName.keys())[list(projectsAcroName.values()).index(projToAnalyze)]]
-
-    #print(projects)
-    #print(projectsFullName)
     
     condensedProjectInformation = []
     disciplines = gen.generalInfo()[2]
@@ -136,34 +156,10 @@ if __name__ == "__main__":
         for j in range(len(disciplines[projectsAcroName[projectsFullName[i]]])):
             condensedProjectInformation.append((projects[i],projectsFullName[i],disciplines[projectsAcroName[projectsFullName[i]]][j]))
 
-    #reports = []
-    #for info in condensedProjectInformation:
-        #reports.append(atlasdms(info))
-
-    #print(reports)
-
     with multiprocessing.Pool() as pool:
         reports = pool.map(atlasdms,condensedProjectInformation)
-
-    #for i in range(len(projects)):
-        #print('\n')
-        #print(projectsFullName[i])
-        #print(disciplinesContractors[projectsAcroName[projectsFullName[i]]])
-        #if len(disciplinesContractors[projectsAcroName[projectsFullName[i]]]) != 0:
-            #print('\n')
-            #print(projectData[i])
-            #print('\n')
-            #print(projectDataPerDisciplines[i])
-            #print('\n')
-        #else:
-            #print('\nNo contractors in this project\n')
-
-    allreports = []
-    for i in range(len(reports)):
-        for j in range(len(reports[i])):
-            allreports.append(reports[i][j])
-
-    for i,r in enumerate(allreports):
+    
+    for i,r in enumerate(reports):
         completeDir = r
         fileName = completeDir.split(os.sep)[-1]
         print('{:02d}'.format(i+1),fileName)
@@ -171,5 +167,22 @@ if __name__ == "__main__":
             shutil.copy(r,os.path.join(saveDir,fileName))
         except Exception as e:
             print('Error {}, file: {}'.format(e,fileName))
+        
+
+    condensedData = []
+    for i in range(len(projectsFullName)):
+        if len(disciplinesContractors[projectsAcroName[projectsFullName[i]]]) != 0:
+            condensedData.append((projects[i],projectsFullName[i]))
+
+    with multiprocessing.Pool() as pool:
+        projectGenData = pool.map(generalAnalysisContractorProjects,condensedData)
+    
+    for i,data in enumerate(projectGenData):
+        print(condensedData[i][1])
+        print('\n')
+        print(data[0])
+        print('\n')
+        print(data[1])
+        print('\n')
 
     print('Script finished in {:.2f} min'.format((timer() - iniTime)/60))
