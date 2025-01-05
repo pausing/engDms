@@ -167,7 +167,8 @@ if __name__ == "__main__":
             shutil.copy(r,os.path.join(saveDir,fileName))
         except Exception as e:
             print('Error {}, file: {}'.format(e,fileName))
-        
+
+    print('Pdf Reports finished in {:.2f} min'.format((timer() - iniTime)/60))
 
     condensedData = []
     for i in range(len(projectsFullName)):
