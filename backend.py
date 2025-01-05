@@ -375,7 +375,7 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
                         newTotalDiscipline.loc[i,'EQUIPMENT'] = totalDiscipline.loc[i,'SUM']
                         newTotalDiscipline.loc[i,'SUM'] = totalDiscipline.loc[i,'SUM']
                         if i !=0:
-                            newTotalDiscipline.loc[i,'SUM [%]'] = newTotalDiscipline.loc[i,'SUM'] / newTotalDiscipline.loc[0,'SUM']
+                            newTotalDiscipline.loc[i,'SUM [%]'] =  100 * newTotalDiscipline.loc[i,'SUM'] / newTotalDiscipline.loc[0,'SUM']
 
                     newTotalDiscipline.loc[5,'EQUIPMENT'] = 100 * (newTotalDiscipline.loc[1,'EQUIPMENT'] * weightIssued + newTotalDiscipline.loc[3,'EQUIPMENT'] * weightApproved) / newTotalDiscipline.loc[0,'EQUIPMENT']
                     newTotalDiscipline.loc[6,'EQUIPMENT'] = 100 * (newTotalDiscipline.loc[2,'EQUIPMENT'] * weightIssued + newTotalDiscipline.loc[4,'EQUIPMENT'] * weightApproved) / newTotalDiscipline.loc[0,'EQUIPMENT']

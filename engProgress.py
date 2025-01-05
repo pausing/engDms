@@ -69,7 +69,7 @@ def atlasdms(condesedInput):
 
     logger.info('{}: Scurve Start'.format(d))
     start = timer()
-    scurvePath = scurve.drawFull(file,projectFullName,d,dayOfAnalysis,folders,approvedStatus)
+    scurvePath = scurve.drawFull(file,projectFullName,d,dayOfAnalysis,folders,approvedStatus,logger)
     logger.info('{}: SCurve Finish: {:.2f} s'.format(d,timer()-start))
 
     logger.info('{}: OutputRev Start'.format(d))

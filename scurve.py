@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 from datetime import datetime,timedelta,date
+from timeit import default_timer as timer
 import numpy as np
 
 def draw(fileToAnalyze,project,disciplina,dateOfAnalysis):
@@ -81,33 +82,59 @@ def draw(fileToAnalyze,project,disciplina,dateOfAnalysis):
     fig.savefig(scurvePath,bbox_inches='tight')
     return scurvePath
 
-def approvedPerDay(day,excelDir,approvedStatus,Folders):
-    files = os.listdir(excelDir)
+def approvedPerDay(day,files,approvedStatus,Folders,excelDir,logger):
+
     total = 'na'
     issuedPlanned = 'na'
     approvedPlanned = 'na'
     issuedReal = 'na'
     approvedReal = 'na'
 
-    for f in files:
-        if f[0:8] == '{:02d}{:02d}{:02d}'.format(day.year,day.month,day.day) and f.find('planejamento') != -1:
-            #print('reading ',f)
-            bd = pd.read_excel(os.path.join(excelDir,f))
-            bck.parseTimeBD(bd,'Date 1st Issue')
-            bck.parseTimeBD(bd,'Expected Date')
-            bck.parseTimeBD(bd,'Expected Approval Date')
-            bck.parseTimeBD(bd,'Approval Date')
-            approvedReal = len(bd[(bd['Workflow State'].isin(approvedStatus)) & (bd['Folder'].isin(Folders))])
-            total = len(bd[(bd['Folder'].isin(Folders))])
-            issuedPlanned = len(bd[(bd['Expected Date_parsed'] <= day) & (bd['Folder'].isin(Folders))])
-            issuedReal = len(bd[(bd['Date 1st Issue_parsed'] <= day) & (bd['Folder'].isin(Folders))])
-            approvedPlanned = len(bd[(bd['Expected Approval Date_parsed'] <= day) & (bd['Folder'].isin(Folders))])
+    logger.info('start approvedPerDay')
+    logger.info(day)
+    logger.info('start searching for file')
+    start = timer()
+    dateString = '{:02d}{:02d}{:02d}'.format(day.year,day.month,day.day)
+    f = [f for f in files if f.startswith(dateString) and 'planejamento' in f]
+    logger.info('{}'.format(f))
+    logger.info('finish seaching for file {:02f} s'.format(timer()-start))
 
-            break
+    logger.info('start filtering and adding up')
+    start = timer()
+
+    if len(f) != 0:
+        bd = pd.read_excel(os.path.join(excelDir,f[0]))
+        bck.parseTimeBD(bd,'Date 1st Issue')
+        bck.parseTimeBD(bd,'Expected Date')
+        bck.parseTimeBD(bd,'Expected Approval Date')
+        bdFiltered = bd[bd['Folder'].isin(Folders)]
+        approvedReal = len(bdFiltered[(bdFiltered['Workflow State'].isin(approvedStatus))])
+        total = len(bdFiltered)
+        issuedPlanned = len(bdFiltered[(bdFiltered['Expected Date_parsed'] <= day)])
+        issuedReal = len(bdFiltered[(bdFiltered['Date 1st Issue_parsed'] <= day)])
+        approvedPlanned = len(bdFiltered[(bdFiltered['Expected Approval Date_parsed'] <= day)])
+
+    logger.info('finish filtering and adding up {:02f} s'.format(timer()-start))
+
+    #for f in files:
+        #if f[0:8] == '{:02d}{:02d}{:02d}'.format(day.year,day.month,day.day) and f.find('planejamento') != -1:
+            ##print('reading ',f)
+            #bd = pd.read_excel(os.path.join(excelDir,f))
+            #bck.parseTimeBD(bd,'Date 1st Issue')
+            #bck.parseTimeBD(bd,'Expected Date')
+            #bck.parseTimeBD(bd,'Expected Approval Date')
+            #bck.parseTimeBD(bd,'Approval Date')
+            #approvedReal = len(bd[(bd['Workflow State'].isin(approvedStatus)) & (bd['Folder'].isin(Folders))])
+            #total = len(bd[(bd['Folder'].isin(Folders))])
+            #issuedPlanned = len(bd[(bd['Expected Date_parsed'] <= day) & (bd['Folder'].isin(Folders))])
+            #issuedReal = len(bd[(bd['Date 1st Issue_parsed'] <= day) & (bd['Folder'].isin(Folders))])
+            #approvedPlanned = len(bd[(bd['Expected Approval Date_parsed'] <= day) & (bd['Folder'].isin(Folders))])
+
+            #break
 
     return total, issuedPlanned, approvedPlanned, issuedReal, approvedReal
 
-def scurveGeneral(bd,minDate,maxDate,approvedStatus,excelDir,project,discipline,dateOfAnalysis,Folders):
+def scurveGeneral(bd,minDate,maxDate,approvedStatus,excelDir,project,discipline,dateOfAnalysis,Folders,logger):
 
     maxVal = 110
 
@@ -122,6 +149,10 @@ def scurveGeneral(bd,minDate,maxDate,approvedStatus,excelDir,project,discipline,
     weightIssued = 70
     weightApproved = 30
 
+    # list of files sorted
+    files = os.listdir(excelDir)
+    files.sort()
+
     # 2 Scurves, 1 with the numbers of last report (except for approvals), 2 with numbers of each report at each day
 
     # calculation of Scurve1_ 
@@ -131,48 +162,62 @@ def scurveGeneral(bd,minDate,maxDate,approvedStatus,excelDir,project,discipline,
     Scurve1_approvedPlanned = []
     Scurve1_approvedReal = []
 
+    logger.info('start of scurve1')
+    start = timer()
+
+
+    bdFiltered = bd[bd['Folder'].isin(Folders)]
+
+    # calculation of Scurve2_ : using for each day the current planning file (not the last)
+    # SCurve2 = [total, issuedPlanned, approvedPlanned, issuedReal, issuedPlanned]
+
+    Scurve2 = [[],[],[],[],[]]
+
     for i in range(len(dates)):
-        Scurve1_total.extend([len(bd[(bd['Folder'].isin(Folders))])])
-        Scurve1_issuedPlanned.extend([len(bd[(bd['Expected Date_parsed'] <= dates[i]) & (bd['Folder'].isin(Folders))])])
-        Scurve1_issuedReal.extend([len(bd[(bd['Date 1st Issue_parsed'] <= dates[i]) & (bd['Folder'].isin(Folders))])])
-        Scurve1_approvedPlanned.extend([len(bd[(bd['Expected Approval Date_parsed'] <= dates[i]) & (bd['Folder'].isin(Folders))])])
-        approvedAux = approvedPerDay(dates[i],excelDir,approvedStatus,Folders)[4]
-        if approvedAux == 'na':
-            if len(Scurve1_approvedReal) == 0:
-                Scurve1_approvedReal.extend([0])
+        Scurve1_total.extend([len(bdFiltered)])
+        Scurve1_issuedPlanned.extend([len(bdFiltered[(bdFiltered['Expected Date_parsed'] <= dates[i])])])
+        Scurve1_issuedReal.extend([len(bdFiltered[(bdFiltered['Date 1st Issue_parsed'] <= dates[i])])])
+        Scurve1_approvedPlanned.extend([len(bdFiltered[(bdFiltered['Expected Approval Date_parsed'] <= dates[i])])])
+        if dates[i] <= dateOfAnalysis:
+            approvedAux = approvedPerDay(dates[i],files,approvedStatus,Folders,excelDir,logger)
+            if approvedAux[4] == 'na':
+                if len(Scurve1_approvedReal) == 0:
+                    Scurve1_approvedReal.extend([0])
+                else:
+                    Scurve1_approvedReal.extend([Scurve1_approvedReal[i-1]])
             else:
-                Scurve1_approvedReal.extend([Scurve1_approvedReal[i-1]])
+                Scurve1_approvedReal.extend([approvedAux[4]])
+
+            # Scurve 2 calculation
+
+            for j in range(len(approvedAux)):
+                if approvedAux[j] == 'na':
+                    if len(Scurve2[j]) == 0:
+                        Scurve2[j].extend([0])
+                    else:
+                        Scurve2[j].extend([Scurve2[j][i-1]])
+                else:
+                    Scurve2[j].extend([approvedAux[j]])
+        
         else:
-            Scurve1_approvedReal.extend([approvedAux])
+            # Scurve1 calculation
+
+            Scurve1_approvedReal.extend([Scurve1_approvedReal[i-1]])
     
-    # calculation of progress in %
+            # Scurve 2 calculation
+
+            for j in range(5):
+                Scurve2[j].extend([Scurve2[j][i-1]])
+
+    # calculation of progress in % for Scurve1
 
     Scurve1_progressPlanned = []
     Scurve1_progressReal = []
     for i in range(len(dates)):
         Scurve1_progressPlanned.extend([weightIssued*(Scurve1_issuedPlanned[i]/Scurve1_total[i]) + weightApproved*(Scurve1_approvedPlanned[i]/Scurve1_total[i])])
         Scurve1_progressReal.extend([weightIssued*(Scurve1_issuedReal[i]/Scurve1_total[i]) + weightApproved*(Scurve1_approvedReal[i]/Scurve1_total[i])])
-
-    # calculation of Scurve2_
-    # SCurve2 = [total, issuedPlanned, approvedPlanned, issuedReal, issuedPlanned]
-    Scurve2 = [[],[],[],[],[]]
-
-    for i in range(len(dates)):
-
-        aux = approvedPerDay(dates[i],excelDir,approvedStatus,Folders)
-        #print(dates[i])
-        #print(aux)
-
-        for j in range(len(aux)):
-            if aux[j] == 'na':
-                if len(Scurve2[j]) == 0:
-                    Scurve2[j].extend([0])
-                else:
-                    Scurve2[j].extend([Scurve2[j][i-1]])
-            else:
-                Scurve2[j].extend([aux[j]])
     
-    # calculation of progress in %
+    # calculation of progress in % for Scurve2
 
     Scurve2_progressPlanned = []
     Scurve2_progressReal = []
@@ -187,8 +232,6 @@ def scurveGeneral(bd,minDate,maxDate,approvedStatus,excelDir,project,discipline,
             else:
                 Scurve2_progressPlanned.extend([Scurve2_progressPlanned[i-1]])
                 Scurve2_progressReal.extend([Scurve2_progressReal[i-1]])
-
-
 
     fig, ax = plt.subplots(1,1,figsize=[3*6.4,3*4.8])
     colors = ['b','c','m','g']
@@ -234,7 +277,7 @@ def scurveGeneral(bd,minDate,maxDate,approvedStatus,excelDir,project,discipline,
 
     return path
 
-def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approvedStatus):
+def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approvedStatus,logger):
 
     ExcelDir = os.path.join(os.path.dirname(fileToAnalyze),'..','Excel')
     bd = pd.read_excel(os.path.join(ExcelDir,fileToAnalyze.split(os.sep)[-1][:-4] + '.xlsx'))
@@ -265,9 +308,17 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
     
     # S curve general
 
-    scurvePath.extend([scurveGeneral(bd,minDate,maxDate,approvedStatus,ExcelDir,project,discipline,dateOfAnalysis,foldersEng)])
+    logger.info('start scurveGeneral')
+    start = timer()
+
+    scurvePath.extend([scurveGeneral(bd,minDate,maxDate,approvedStatus,ExcelDir,project,discipline,dateOfAnalysis,foldersEng,logger)])
+
+    logger.info('finish scurveGeneral in {:.2f} s'.format(timer()-start))
     
     # S curve for each responsible and category
+
+    logger.info('start scurve for each responsible')
+    start = timer()
 
     for r in responsibles:
         #print(project,disciplina,r)
@@ -304,6 +355,9 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
     
         fig.suptitle('{} // {} // {}: Planned vs Real'.format(project,discipline,r),size='large')
 
+        logger.info('start matplotlib Part of responsible {}'.format(r))
+        startGraph = timer()
+
         weeks = [-2,-1,1,2,3]
         days = [-7,-6,-5,-4,-3,-2,-1]
 
@@ -334,6 +388,9 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
         path = os.path.join(ExcelDir,'scurve {}_{}_{}_{}_{}_{}.jpg'.format(project,discipline,r,dateOfAnalysis.year,dateOfAnalysis.month,dateOfAnalysis.day))
         scurvePath.extend([path])
         fig.savefig(path,bbox_inches='tight')
+
+        logger.info('finish matplotlib part of responsible {} in {:.2f} s'.format(r,timer()-startGraph))
+    logger.info('finish scurve for each responsible in {:.2f} s'.format(timer()-start))
 
     return scurvePath
 
