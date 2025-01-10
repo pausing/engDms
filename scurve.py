@@ -110,9 +110,9 @@ def approvedPerDay(day,files,approvedStatus,Folders,excelDir,logger):
         bdFiltered = bd[bd['Folder'].isin(Folders)]
         approvedReal = len(bdFiltered[(bdFiltered['Workflow State'].isin(approvedStatus))])
         total = len(bdFiltered)
-        issuedPlanned = len(bdFiltered[(bdFiltered['Expected Date_parsed'] <= day)])
-        issuedReal = len(bdFiltered[(bdFiltered['Date 1st Issue_parsed'] <= day)])
-        approvedPlanned = len(bdFiltered[(bdFiltered['Expected Approval Date_parsed'] <= day)])
+        issuedPlanned = len(bdFiltered[(bdFiltered['Expected Date_parsed'].values <= day)])
+        issuedReal = len(bdFiltered[(bdFiltered['Date 1st Issue_parsed'].values <= day)])
+        approvedPlanned = len(bdFiltered[(bdFiltered['Expected Approval Date_parsed'].values <= day)])
 
     logger.info('finish filtering and adding up {:02f} s'.format(timer()-start))
 
@@ -175,9 +175,9 @@ def scurveGeneral(bd,minDate,maxDate,approvedStatus,excelDir,project,discipline,
 
     for i in range(len(dates)):
         Scurve1_total.extend([len(bdFiltered)])
-        Scurve1_issuedPlanned.extend([len(bdFiltered[(bdFiltered['Expected Date_parsed'] <= dates[i])])])
-        Scurve1_issuedReal.extend([len(bdFiltered[(bdFiltered['Date 1st Issue_parsed'] <= dates[i])])])
-        Scurve1_approvedPlanned.extend([len(bdFiltered[(bdFiltered['Expected Approval Date_parsed'] <= dates[i])])])
+        Scurve1_issuedPlanned.extend([len(bdFiltered[(bdFiltered['Expected Date_parsed'].values <= dates[i])])])
+        Scurve1_issuedReal.extend([len(bdFiltered[(bdFiltered['Date 1st Issue_parsed'].values <= dates[i])])])
+        Scurve1_approvedPlanned.extend([len(bdFiltered[(bdFiltered['Expected Approval Date_parsed'].values <= dates[i])])])
         if dates[i] <= dateOfAnalysis:
             approvedAux = approvedPerDay(dates[i],files,approvedStatus,Folders,excelDir,logger)
             if approvedAux[4] == 'na':
@@ -461,16 +461,16 @@ def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,
             for d in disciplines:
                 futurePlanningDir = os.path.join(projectDir,d,'Input')
                 file, dayOfFile = bck.chooseFile(futurePlanningDir)
-
                 df = pd.read_csv(os.path.join(futurePlanningDir,file))
                 bck.parseTimeBD(df,'Expected Date')
                 #bck.parseTimeBD(df,'Date 1st Issue')
                 bck.parseTimeBD(df,'Expected Approval Date')
+                dfFiltered = df[df['Folder'].isin(foldersEng)]
 
-                total += len(df[df['Folder'].isin(foldersEng)])
-                issuedExpected += len(df[(df['Folder'].isin(foldersEng)) & (df['Expected Date_parsed'] <= dates[i])])
+                total += len(dfFiltered)
+                issuedExpected += len(dfFiltered[(dfFiltered['Expected Date_parsed'].values <= dates[i])])
                 #issuedReal += len(df[(df['Folder'].isin(foldersEng)) & (df['Date 1st Issue_parsed'] <= dates[i])])
-                approvedExpected += len(df[(df['Folder'].isin(foldersEng)) & (df['Expected Approval Date_parsed'] <= dates[i])])
+                approvedExpected += len(dfFiltered[(dfFiltered['Expected Approval Date_parsed'].values <= dates[i])])
                 #approvedReal += len(df[(df['Folder'].isin(foldersEng)) & (df['Workflow State'].isin(approvedStatus))])
 
             #real = 100 * ((weightIssued*issuedReal + weightApproved*approvedReal)/total)

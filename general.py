@@ -18,7 +18,6 @@ def generalInfo():
         'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
         'DRA':['01_PV-PRE EXEC','03_PV','04_HV','05_SUP'],
         'EST':['01_PV-PRE EXEC','02_HV-PRE EXEC','03_BESS-PRE EXEC','04_EWA-PV','06_HV','08_SUP'],
-        #'EST':['01_PV-PRE EXEC','02_HV-PRE EXEC','04_EWA-PV','06_HV','08_SUP'],
         'CAM':['02_PV_PRE_EXEC'],
     }
 
