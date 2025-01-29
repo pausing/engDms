@@ -25,7 +25,9 @@ def cleanColumns(file):
 
     return newfile
     
-def reviewOutput(directory,folders,approvedStatus,dayOfAnalysis,logger):
+def reviewOutput(directory,folders,approvedStatus,dayOfAnalysis,logger,project,discipline):
+    p = project
+    d = discipline
     file = bck.chooseFile(directory)[0]
     logger.info('reviewOutput - analyzing {}'.format(file))
     bck.formatFile(file,logger)
@@ -33,12 +35,12 @@ def reviewOutput(directory,folders,approvedStatus,dayOfAnalysis,logger):
 
     bd = pd.read_csv(file)
 
-    bck.parseTimeBD(bd,'Expected First Issue Date')
-    bck.parseTimeBD(bd,'Replanned First Issue Date')
-    bck.parseTimeBD(bd,'Fisrt Issue Date')
-    bck.parseTimeBD(bd,'Last Issue Date')
-    bck.parseTimeBD(bd,'Expected Approval Date')
-    bck.parseTimeBD(bd,'Replanned Expected Approval')
+    bck.parseTimeBD(bd,'Expected First Issue Date', p + ' ' + d)
+    bck.parseTimeBD(bd,'Replanned First Issue Date', p + ' ' + d)
+    bck.parseTimeBD(bd,'Fisrt Issue Date', p + ' ' + d)
+    bck.parseTimeBD(bd,'Last Issue Date', p + ' ' + d)
+    bck.parseTimeBD(bd,'Expected Approval Date', p + ' ' + d)
+    bck.parseTimeBD(bd,'Replanned Expected Approval', p + ' ' + d)
     bd = bd.drop('Expected First Issue Date',axis=1)
     bd = bd.drop('Replanned First Issue Date',axis=1)
     bd = bd.drop('Fisrt Issue Date',axis=1)

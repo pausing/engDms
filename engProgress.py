@@ -74,7 +74,7 @@ def atlasdms(condesedInput):
 
     logger.info('{}: OutputRev Start'.format(d))
     start = timer()
-    data.extend([out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dayOfAnalysis,logger)[0]])
+    data.extend([out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dayOfAnalysis,logger,projectFullName,d)[0]])
     titles.extend(['OE analysis'])
     logger.info('{}: OutputRev Finish: {:.2f} s'.format(d,timer()-start))
 

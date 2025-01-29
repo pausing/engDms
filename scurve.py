@@ -10,10 +10,10 @@ def draw(fileToAnalyze,project,disciplina,dateOfAnalysis):
 
     ExcelDir = os.path.join(os.path.dirname(fileToAnalyze),'..','Excel')
     bd = pd.read_excel(os.path.join(ExcelDir,fileToAnalyze.split(os.sep)[-1][:-4] + '.xlsx'))
-    bck.parseTimeBD(bd,'Date 1st Issue')
-    bck.parseTimeBD(bd,'Expected Date')
-    bck.parseTimeBD(bd,'Expected Approval Date')
-    bck.parseTimeBD(bd,'Approval Date')
+    bck.parseTimeBD(bd,'Date 1st Issue', project + ' ' + disciplina)
+    bck.parseTimeBD(bd,'Expected Date', project + ' ' + disciplina)
+    bck.parseTimeBD(bd,'Expected Approval Date', project + ' ' + disciplina)
+    bck.parseTimeBD(bd,'Approval Date', project + ' ' + disciplina)
 
     #minDate = min(list(bd['Expected Date_parsed']))
     #maxDate = max(list(bd['Expected Date_parsed']))
@@ -104,9 +104,9 @@ def approvedPerDay(day,files,approvedStatus,Folders,excelDir,logger):
 
     if len(f) != 0:
         bd = pd.read_excel(os.path.join(excelDir,f[0]))
-        bck.parseTimeBD(bd,'Date 1st Issue')
-        bck.parseTimeBD(bd,'Expected Date')
-        bck.parseTimeBD(bd,'Expected Approval Date')
+        bck.parseTimeBD(bd,'Date 1st Issue',f[0])
+        bck.parseTimeBD(bd,'Expected Date',f[0])
+        bck.parseTimeBD(bd,'Expected Approval Date',f[0])
         bdFiltered = bd[bd['Folder'].isin(Folders)]
         approvedReal = len(bdFiltered[(bdFiltered['Workflow State'].isin(approvedStatus))])
         total = len(bdFiltered)
@@ -281,10 +281,10 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
 
     ExcelDir = os.path.join(os.path.dirname(fileToAnalyze),'..','Excel')
     bd = pd.read_excel(os.path.join(ExcelDir,fileToAnalyze.split(os.sep)[-1][:-4] + '.xlsx'))
-    bck.parseTimeBD(bd,'Date 1st Issue')
-    bck.parseTimeBD(bd,'Expected Date')
-    bck.parseTimeBD(bd,'Expected Approval Date')
-    bck.parseTimeBD(bd,'Approval Date')
+    bck.parseTimeBD(bd,'Date 1st Issue',project + ' ' + discipline)
+    bck.parseTimeBD(bd,'Expected Date',project + ' ' + discipline)
+    bck.parseTimeBD(bd,'Expected Approval Date',project + ' ' + discipline)
+    bck.parseTimeBD(bd,'Approval Date',project + ' ' + discipline)
 
     responsibles = list(set(bd['Responsible']))
     for r in responsibles:
@@ -426,9 +426,9 @@ def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,
         file, dayOfFile = bck.chooseFile(futurePlanningDir)
         
         df = pd.read_csv(os.path.join(futurePlanningDir,file))
-        bck.parseTimeBD(df,'Expected Date')
-        bck.parseTimeBD(df,'Date 1st Issue')
-        bck.parseTimeBD(df,'Expected Approval Date')
+        bck.parseTimeBD(df,'Expected Date',projectFullName + ' ' + d)
+        bck.parseTimeBD(df,'Date 1st Issue',projectFullName + ' ' + d)
+        bck.parseTimeBD(df,'Expected Approval Date',projectFullName + ' ' + d)
         
         total += len(df[df['Folder'].isin(foldersEng)])
         issuedReal += len(df[(df['Folder'].isin(foldersEng)) & (df['Date 1st Issue_parsed'] <= dates[i])])
@@ -462,9 +462,9 @@ def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,
                 futurePlanningDir = os.path.join(projectDir,d,'Input')
                 file, dayOfFile = bck.chooseFile(futurePlanningDir)
                 df = pd.read_csv(os.path.join(futurePlanningDir,file))
-                bck.parseTimeBD(df,'Expected Date')
+                bck.parseTimeBD(df,'Expected Date',projectFullName + ' ' + d)
                 #bck.parseTimeBD(df,'Date 1st Issue')
-                bck.parseTimeBD(df,'Expected Approval Date')
+                bck.parseTimeBD(df,'Expected Approval Date',projectFullName + ' ' + d)
                 dfFiltered = df[df['Folder'].isin(foldersEng)]
 
                 total += len(dfFiltered)

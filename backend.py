@@ -38,20 +38,28 @@ def formatFile(file_path,logger):
             else:
                 logger.info('file {} already with commas'.format(file_path))
 
-def parseTime(strTime):
+def parseTime(strTime,iden):
     # date str 03/07/2023
-    y = int(strTime[6:10])
-    m = int(strTime[3:5])
-    d = int(strTime[0:2])
+    try:
+        y = int(strTime[6:10])
+        m = int(strTime[3:5])
+        d = int(strTime[0:2])
+    except Exception as e:
+        print('Error in {}'.format(iden))
+        print('Error in {}'.format(strTime))
+        print(e)
+        y = 2050
+        m = 1
+        d = 1
     return date(y,m,d)
 
-def parseTimeBD(bd,title):
+def parseTimeBD(bd,title,iden):
     for i in range(len(bd)):
         #print(i,bd.loc[i,title])
         if bd.loc[i,title] == '--' or not issubclass(type(bd.loc[i,title]),str):
             bd.loc[i,title + '_parsed'] = date(2050,1,1)
         else:
-            bd.loc[i,title + '_parsed'] = parseTime(bd.loc[i,title])
+            bd.loc[i,title + '_parsed'] = parseTime(bd.loc[i,title],iden)
 
 def printResults(titles,totals,IssuedExpected,IssuedReal,AppExpected,AppReal,responsible,logger):
     logger.info(responsible)
@@ -117,7 +125,7 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
     #print(fileToAnalyze)
     bd = pd.read_csv(fileToAnalyze)
     # parse information Column Custom Fields
-    outDf = out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dateOfAnalysis,logger)[1]
+    outDf = out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dateOfAnalysis,logger,projectAcro,disciplina)[1]
     #parseEspecialColumns(bd,projectAcro,keyWordCol,disciplina)
     parseEspecialColumns(bd,outDf,logger)
 
@@ -129,10 +137,10 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
     if not os.path.exists(ExcelDir):
         os.mkdir(ExcelDir)
 
-    parseTimeBD(bd,'Date 1st Issue')
-    parseTimeBD(bd,'Expected Date')
-    parseTimeBD(bd,'Expected Approval Date')
-    parseTimeBD(bd,'Approval Date')
+    parseTimeBD(bd,'Date 1st Issue', projectAcro + ' ' + disciplina)
+    parseTimeBD(bd,'Expected Date', projectAcro + ' ' + disciplina)
+    parseTimeBD(bd,'Expected Approval Date', projectAcro + ' ' + disciplina)
+    parseTimeBD(bd,'Approval Date', projectAcro + ' ' + disciplina)
 
     # save to excel de Input file from Colaborativo
     bd.to_excel(os.path.join(ExcelDir,fileToAnalyze.split(os.sep)[-1][:-4] + '.xlsx'))
@@ -217,6 +225,10 @@ def analyzeRespAndCat(fileToAnalyze,project,disciplina,approvedStatus,foldersEng
     logger.info('responsibles: {}'.format(responsibles))
 
     workFlowStatus = list(set(bd['Workflow State']))
+    for s in workFlowStatus:
+        if not issubclass(type(s),str):
+            workFlowStatus.remove(s)
+            logger.info('workflow status {} not a string'.format(s))
     workFlowStatus.sort()
     
     areas = []

@@ -95,6 +95,13 @@ def whichPath(where):
 
     return projects, projectsDict, saveDir
 
+def where(location):
+    if location == 'Pablos-Laptop.local':
+        return 'mac'
+    if location == 'DESKTOP-00OQQTF':
+        return 'pc'
+
+
 def colaborativoInformation():
     approvedStatus = ['Compliant','Compliant with comments','Issued For Construction','Issued For Construction_','Pre analysis','Ready for as built'] 
     foldersEng = ['CIVIL','ELECTRICAL','ELECTROMECHANICAL','EQUIPMENT']
