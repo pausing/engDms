@@ -65,7 +65,7 @@ def reviewOutput(directory,folders,approvedStatus,dayOfAnalysis,logger,project,d
     }
     bd.rename(columns=changeTitles,inplace=True)
     bd['DaysNoAnswer'] = dayOfAnalysis - bd['LAST ISS']
-    statusToCheck = ['For Analysis','Pre analysis']
+    statusToCheck = ['For Analysis','Pre analysis','For revision']
     bdFiltered = bd[(bd['Folder'].isin(folders)) & ((bd['Status'].isin(statusToCheck)))]
     bdFiltered = bdFiltered.sort_values(by=['DaysNoAnswer'])
     bdFiltered = bdFiltered.reset_index(drop=True)

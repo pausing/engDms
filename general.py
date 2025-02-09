@@ -1,6 +1,6 @@
 
 def generalInfo():
-    projectsFullNames = ['BESS DEL DESIERTO','SHANGRILA','LUIZ CARLOS','DRACO','ESTEPA','CAMPANO']
+    projectsFullNames = ['BESS DEL DESIERTO','SHANGRILA','LUIZ CARLOS','DRACO','ESTEPA','ESTEPA-2','COPIAPO','CAMPANO']
     #projectsFullNames = ['BESS DEL DESIERTO','SHANGRILA','LUIZ CARLOS','DRACO','ESTEPA']
 
     projectsAcroName = {
@@ -9,6 +9,8 @@ def generalInfo():
         'LUIZ CARLOS':'LC',
         'DRACO':'DRA',
         'ESTEPA':'EST',
+        'ESTEPA-2':'EST-2',
+        'COPIAPO':'COP',
         'CAMPANO':'CAM',
     }
 
@@ -18,7 +20,9 @@ def generalInfo():
         'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
         'DRA':['01_PV-PRE EXEC','03_PV','04_HV','05_SUP'],
         'EST':['01_PV-PRE EXEC','02_HV-PRE EXEC','03_BESS-PRE EXEC','04_EWA-PV','06_HV','08_SUP'],
-        'CAM':['02_PV_PRE_EXEC'],
+        'EST-2':['02_BESS_PRE_EXEC'],
+        'COP':['01_PV-PRE EXEC','03_BESS-PRE EXEC'],
+        'CAM':['01_PV-PRE EXEC'],
     }
 
     disciplinesContractors = {
@@ -28,6 +32,8 @@ def generalInfo():
         'DRA':['03_PV','04_HV','05_SUP'],
         'EST':['06_HV','08_SUP'],
         'CAM':[],
+        'EST-2':[],
+        'COP':[],
     }
 
     # subFolder for disciplines 05_SUP: LC,DRACO
@@ -47,10 +53,12 @@ def whichPath(where):
     planDirLCMac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/docTO/TO/Brazil/05_LC/02_EXE/03_ENG/00_Planning'
     planDirDRAMac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/docTO/TO/Brazil/10_DRA/02_EXE/03_ENG/00_Planning'
     planDirESTMac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/docTO/TO/Chile/07_EST/02_EXE/03_ENG/00_Planning'
+    planDirEST_2_Mac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/docTO/TO/Chile/08_EST-2/02_EXE/03_ENG/00_Planning'
+    planDirCOPMac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/docTO/TO/Chile/11_COP/02_EXE/03_ENG/00_Planning'
     planDirCAMMac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/docTO/TO/Colombia/06_CAM/02_EXE/03_ENG/00_Planning'
 
     saveDirMac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/Documentos/02_INGENIERIA/07_ProjReport'
-    projectsMac = [planDirBESSMac,planDirSHAMac,planDirLCMac,planDirDRAMac,planDirESTMac,planDirCAMMac]
+    projectsMac = [planDirBESSMac,planDirSHAMac,planDirLCMac,planDirDRAMac,planDirESTMac,planDirEST_2_Mac,planDirCOPMac,planDirCAMMac]
     #projectsMac = [planDirBESSMac,planDirSHAMac,planDirLCMac,planDirDRAMac,planDirESTMac]
 
     planDirBESSPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\docTO\\TO\\Chile\\01_BDD\\02_EXE\\03_ENG\\00_Planning'
@@ -58,10 +66,12 @@ def whichPath(where):
     planDirLCPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\docTO\\TO\\Brazil\\05_LC\\02_EXE\\03_ENG\\00_Planning'
     planDirDRAPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\docTO\\TO\\Brazil\\10_DRA\\02_EXE\\03_ENG\\00_Planning'
     planDirESTPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\docTO\\TO\\Chile\\07_EST\\02_EXE\\03_ENG\\00_Planning'
+    planDirEST_2PC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\docTO\\TO\\Chile\\08_EST-2\\02_EXE\\03_ENG\\00_Planning'
+    planDirCOPPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\docTO\\TO\\Chile\\11_COP\\02_EXE\\03_ENG\\00_Planning'
     planDirCAMPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\docTO\\TO\\Colombia\\06_CAM\\02_EXE\\03_ENG\\00_Planning'
 
     saveDirPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\Documentos\\02_INGENIERIA\\07_ProjReport'
-    projectsPC = [planDirBESSPC,planDirSHAPC,planDirLCPC,planDirDRAPC,planDirESTPC,planDirCAMPC]
+    projectsPC = [planDirBESSPC,planDirSHAPC,planDirLCPC,planDirDRAPC,planDirESTPC,planDirEST_2PC,planDirCOPPC,planDirCAMPC]
     #projectsPC = [planDirBESSPC,planDirSHAPC,planDirLCPC,planDirDRAPC,planDirESTPC]
 
     planDirBESSLap = 'C:\\Users\\PabloMaqueda\\OneDrive\\OneDrive - AtlasRen\\docTO\\TO\\Chile\\01_BDD\\02_EXE\\03_ENG\\00_Planning'
