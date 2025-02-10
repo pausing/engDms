@@ -9,6 +9,9 @@ from timeit import default_timer as timer
 import general as gen
 import multiprocessing
 import logging
+import pdf_export_general_rep as expGen
+import platform
+
 
 def configure_logging(project,d):
     log_filename = 'log_{}_{}.log'.format(project,d)
@@ -114,7 +117,7 @@ def generalAnalysisContractorProjects(information):
 
     dataOfProject,disciplinesDF = bck.genReportPerProject(project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)
     projectScurve = scurve.drawProject(dayOfAnalysis,project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,foldersEng,folderSup,projectsWithSUP,approvedStatus)
-    projectData = (dataOfProject,disciplinesDF,projectScurve)
+    projectData = (dataOfProject,disciplinesDF,projectScurve,dayOfAnalysis)
 
     print('finish analysis full project {} in {:.2f} s'.format(projectFullName,timer()-start))
 
@@ -123,14 +126,12 @@ def generalAnalysisContractorProjects(information):
 if __name__ == "__main__":
 
     iniTime = timer()
-    # where are u?
-    where = input('\nWhere r u [mac,pc,lap]:\n')
-    print('\nInput received:',where)
-    print('\n')
 
-    projects = gen.whichPath(where)[0]
-    projecstDict = gen.whichPath(where)[1]
-    saveDir = gen.whichPath(where)[2]
+    # update folder location based on computer u r at
+    location = platform.node()
+
+    # folder path por projects and folder to save information
+    projects, projectsDict, saveDir = gen.whichPath(gen.where(location))
 
     # let the user decide which project analyze
     projectsFullName = gen.generalInfo()[0]
@@ -147,7 +148,7 @@ if __name__ == "__main__":
 
     # if no all projects modify list of projects folder and projectsFullName 
     if projToAnalyze != 'ALL':
-        projects = [projecstDict[projToAnalyze]]
+        projects = [projectsDict[projToAnalyze]]
         projectsFullName = [list(projectsAcroName.keys())[list(projectsAcroName.values()).index(projToAnalyze)]]
     
     condensedProjectInformation = []
@@ -170,20 +171,35 @@ if __name__ == "__main__":
 
     print('Pdf Reports finished in {:.2f} min'.format((timer() - iniTime)/60))
 
-    condensedData = []
-    for i in range(len(projectsFullName)):
-        if len(disciplinesContractors[projectsAcroName[projectsFullName[i]]]) != 0:
-            condensedData.append((projects[i],projectsFullName[i]))
+    # for the general report, the project has to have subcontractors disciplines (no preexec)
+    projectsWithSubcontractors = False
 
-    with multiprocessing.Pool() as pool:
-        projectGenData = pool.map(generalAnalysisContractorProjects,condensedData)
+    if projToAnalyze != 'ALL':
+        if len(disciplinesContractors[projectsAcroName[projectsFullName[0]]]) == 0:
+            print('project with no subContractor disciplines')
+        else:
+            projectsWithSubcontractors = True
+    else:
+        projectsWithSubcontractors = True
+
+    if projectsWithSubcontractors == True: 
+        condensedData = []
+        for i in range(len(projectsFullName)):
+            if len(disciplinesContractors[projectsAcroName[projectsFullName[i]]]) != 0:
+                condensedData.append((projects[i],projectsFullName[i]))
+
+        with multiprocessing.Pool() as pool:
+            # generalAnalysisContractorProjects retruns sum of all data of the project, data of the contractor disciplines, scurve image path and dayOfAnalysis
+            projectGenData = pool.map(generalAnalysisContractorProjects,condensedData)
     
-    for i,data in enumerate(projectGenData):
-        print(condensedData[i][1])
-        print('\n')
-        print(data[0])
-        print('\n')
-        print(data[1])
-        print('\n')
+        expGen.pdfExport_generalReport(condensedData,projectGenData)
+    
+        for i,data in enumerate(projectGenData):
+            print(condensedData[i][1])
+            print('\n')
+            print(data[0])
+            print('\n')
+            print(data[1])
+            print('\n')
 
     print('Script finished in {:.2f} min'.format((timer() - iniTime)/60))
