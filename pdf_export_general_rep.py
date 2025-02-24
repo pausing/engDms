@@ -67,9 +67,8 @@ def projectData_to_pdf(pdf,df,fontSize,tabletitle):
 
         pdf.ln(table_cell_height)
     
-
+    
 def pdfExport_generalReport(projects,data):
-    print(data)
 
     projectsAcroNames = []
     projectsFullName = []
@@ -98,17 +97,20 @@ def pdfExport_generalReport(projects,data):
     pdf.ln(20)
 
     for i,p in enumerate(projectsFullName):
-        if i != 0:
-            pdf.add_page(orientation='landscape')
+        #if i != 0:
+            #pdf.add_page(orientation='landscape')
         pdf.set_font('Arial','',10)
         fontSize = 5
         pdf.cell(40,10,p)
         pdf.ln(10)
+        pdf.cell(40,10,'Expected Progress: {} %, Real Progress: {} %'.format(dataOfProjects[i].loc[5,'SUM [%]'],dataOfProjects[i].loc[6,'SUM [%]']))
+        pdf.ln(10)
         projectData_to_pdf(pdf,dataOfProjects[i],fontSize,projectsFullName)
+        pdf.ln(30)
 
     for i,p in enumerate(projectsFullName):
-        if i != 0:
-            pdf.add_page(orientation='landscape')
+
+        pdf.add_page(orientation='landscape')
         pdf.set_font('Arial','',10)
         fontSize = 5
         pdf.cell(40,10,p)

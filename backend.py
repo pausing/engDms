@@ -416,7 +416,12 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
                 if  (projectFullName in projectsWithSUP) & (d.find('SUP') != -1):
                     #print('project with SUP', projectFullName)
                     for f in folderSup[projectFullName]:
-                        totalDF['EQUIPMENT'] += totalDiscipline[f]
+                        try:
+                            totalDF['EQUIPMENT'] += totalDiscipline[f]
+                        except:
+                            for j in range(len(totalDiscipline)):
+                                totalDF.loc[j,'EQUIPMENT'] += 0
+
 
                 else:
                     totalDF['CIVIL'] += totalDiscipline['CIVIL']

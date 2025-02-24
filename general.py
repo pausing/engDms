@@ -19,7 +19,7 @@ def generalInfo():
         'SHA':['01_PV','02_HV','03_LT'],
         'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
         'DRA':['01_PV-PRE EXEC','03_PV','04_HV','05_SUP'],
-        'EST':['01_PV-PRE EXEC','02_HV-PRE EXEC','03_BESS-PRE EXEC','04_EWA-PV','06_HV','08_SUP'],
+        'EST':['01_PV-PRE EXEC','02_HV-PRE EXEC','03_BESS-PRE EXEC','04_EWA-PV','05_PV','06_HV','07_BESS','08_SUP'],
         'EST-2':['02_BESS_PRE_EXEC'],
         'COP':['01_PV-PRE EXEC','03_BESS-PRE EXEC'],
         'CAM':['01_PV-PRE EXEC'],
@@ -30,7 +30,7 @@ def generalInfo():
         'SHA':['01_PV','02_HV','03_LT'],
         'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
         'DRA':['03_PV','04_HV','05_SUP'],
-        'EST':['06_HV','08_SUP'],
+        'EST':['05_PV','06_HV','07_BESS','08_SUP'],
         'CAM':[],
         'EST-2':[],
         'COP':[],
@@ -42,7 +42,7 @@ def generalInfo():
     folderSup = {
         'LUIZ CARLOS':['CHINT','JINKO','NEXTRACKER','STI','SUNGROW','WEG'],
         'DRACO':['TRACKERS','INVERTERS','MODULES','POWER_TRANSFORMERS'],
-        'ESTEPA':['INVERTERS','MODULES','POWER_TRANSFORMERS','TRACKERS'],
+        'ESTEPA':['INVERTERS','MODULES','POWER_TRANSFORMERS','TRACKERS','BESS_SUPPLY'],
     }
 
     return projectsFullNames, projectsAcroName, disciplines, disciplinesContractors, projectsWithSUP, folderSup
