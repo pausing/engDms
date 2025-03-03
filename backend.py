@@ -25,11 +25,13 @@ def formatFile(file_path,logger):
                 txtFile.truncate()
             else:
                 logger.info('file {} already with commas'.format(file_path))
-    except:
+    except Exception as e:
+        logger.info(f'Failed to open with utf-8 encoding: {str(e)}')
         with open(file_path,'r+',encoding='ISO-8859-1') as txtFile:
             txt = txtFile.read()
+            logger.info('file: {} opened with ISO-8859-1 encoding')
             if txt.find(';') != -1:
-                logger.info('file wiht ;, replacing')
+                logger.info('file with ;, replacing')
                 txt = txt.replace(',','_')
                 txt = txt.replace(';',',')
                 txtFile.seek(0)
