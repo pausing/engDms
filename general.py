@@ -42,7 +42,7 @@ def generalInfo():
     folderSup = {
         'LUIZ CARLOS':['CHINT','JINKO','NEXTRACKER','STI','SUNGROW','WEG'],
         'DRACO':['TRACKERS','INVERTERS','MODULES','POWER_TRANSFORMERS'],
-        'ESTEPA':['INVERTERS','MODULES','POWER_TRANSFORMERS','TRACKERS','BESS_SUPPLY'],
+        'ESTEPA':['INVERTERS','MODULES_LONGI','POWER_TRANSFORMERS','TRACKERS','BESS_SUPPLY'],
     }
 
     return projectsFullNames, projectsAcroName, disciplines, disciplinesContractors, projectsWithSUP, folderSup

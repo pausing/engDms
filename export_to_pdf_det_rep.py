@@ -60,7 +60,7 @@ def output_df_to_pdf(pdf,df,fontSize,tabletitle):
 
         if tabletitle == 'DOCS NOT ISSUED':
             strDate = df.loc[row,'EXP ISS']
-            if strDate < date.today():
+            if strDate <= date.today():
                 pdf.set_text_color(255,0,0)
 
         for i,col in enumerate(cols):
