@@ -163,10 +163,14 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
     docApprExpectedPerFolder = []
     docApprRealPerFolder = []
     docTotalsPerFolder = []
+    doc1stRevPerFolderAndExpected = []
+
     for f in foldersEng:
-        #filteredData = bd((bd['Folder'] == f) & (bd['Workflow State'] != 'Canceled'))
+        filteredData = bd[(bd['Folder'] == f) & (bd['Workflow State'] != 'Cancelled')]
+        print(disciplina,f,len(filteredData[filteredData['Folder'] == f]))
         docTotalsPerFolder.extend([len(bd[(bd['Folder'] == f)])])
         doc1stRevPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Date 1st Issue_parsed'] <= dateOfAnalysis)])])
+        doc1stRevPerFolderAndExpected.extend([len(bd[(bd['Folder'] == f) & (bd['Date 1st Issue_parsed'] <= dateOfAnalysis) & (bd['Expected Date_parsed'] <= dateOfAnalysis)])])
         docExpectedPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Expected Date_parsed'] <= dateOfAnalysis)])])
         docApprExpectedPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Expected Approval Date_parsed'] <= dateOfAnalysis)])])
         docApprRealPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Workflow State'].isin(approvedStatus))])])
