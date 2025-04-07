@@ -164,6 +164,7 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
     docApprRealPerFolder = []
     docTotalsPerFolder = []
     for f in foldersEng:
+        #filteredData = bd((bd['Folder'] == f) & (bd['Workflow State'] != 'Canceled'))
         docTotalsPerFolder.extend([len(bd[(bd['Folder'] == f)])])
         doc1stRevPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Date 1st Issue_parsed'] <= dateOfAnalysis)])])
         docExpectedPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Expected Date_parsed'] <= dateOfAnalysis)])])
