@@ -63,7 +63,7 @@ def parseTimeBD(bd,title,iden):
         else:
             bd.loc[i,title + '_parsed'] = parseTime(bd.loc[i,title],iden)
 
-def printResults(titles,totals,IssuedExpected,IssuedReal,AppExpected,AppReal,responsible,logger):
+def printResults(titles,totals,IssuedExpected,IssuedReal,IssuedRealAndExpected,AppExpected,AppReal,responsible,logger):
     logger.info(responsible)
     t = ['TOTAL']
     t.extend(totals)
@@ -77,6 +77,10 @@ def printResults(titles,totals,IssuedExpected,IssuedReal,AppExpected,AppReal,res
     r.extend(IssuedReal)
     r.extend([sum(IssuedReal)])
     r.extend(['{:.02f}'.format(100*sum(IssuedReal)/sum(totals))])
+    realAndExp = ['ISSUED REAL FROM EXPECTED']
+    realAndExp.extend(IssuedRealAndExpected)
+    realAndExp.extend([sum(IssuedRealAndExpected)])
+    realAndExp.extend(['{:.02f}'.format(100*sum(IssuedRealAndExpected)/sum(totals))])
     ae = ['APPROVED EXPECTED']
     ae.extend(AppExpected)
     ae.extend([sum(AppExpected)])
@@ -85,7 +89,7 @@ def printResults(titles,totals,IssuedExpected,IssuedReal,AppExpected,AppReal,res
     ar.extend(AppReal)
     ar.extend([sum(AppReal)])
     ar.extend(['{:.02f}'.format(100*sum(AppReal)/sum(totals))])
-    data = [t,e,r,ae,ar]
+    data = [t,e,r,realAndExp,ae,ar]
 
     h = ['ITEM']
     h.extend(titles)
@@ -127,7 +131,7 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
     #print(fileToAnalyze)
     bd = pd.read_csv(fileToAnalyze)
     # parse information Column Custom Fields
-    outDf = out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dateOfAnalysis,logger,projectAcro,disciplina)[1]
+    outDf = out.reviewOutput(subDirOutput,foldersEng,approvedStatus,dateOfAnalysis,logger,projectAcro,disciplina)[2]
     #parseEspecialColumns(bd,projectAcro,keyWordCol,disciplina)
     parseEspecialColumns(bd,outDf,logger)
 
@@ -167,15 +171,14 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
 
     for f in foldersEng:
         filteredData = bd[(bd['Folder'] == f) & (bd['Workflow State'] != 'Cancelled')]
-        print(disciplina,f,len(filteredData[filteredData['Folder'] == f]))
-        docTotalsPerFolder.extend([len(bd[(bd['Folder'] == f)])])
-        doc1stRevPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Date 1st Issue_parsed'] <= dateOfAnalysis)])])
-        doc1stRevPerFolderAndExpected.extend([len(bd[(bd['Folder'] == f) & (bd['Date 1st Issue_parsed'] <= dateOfAnalysis) & (bd['Expected Date_parsed'] <= dateOfAnalysis)])])
-        docExpectedPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Expected Date_parsed'] <= dateOfAnalysis)])])
-        docApprExpectedPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Expected Approval Date_parsed'] <= dateOfAnalysis)])])
-        docApprRealPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Workflow State'].isin(approvedStatus))])])
+        docTotalsPerFolder.extend([len(filteredData)])
+        doc1stRevPerFolder.extend([len(filteredData[(filteredData['Date 1st Issue_parsed'] <= dateOfAnalysis)])])
+        doc1stRevPerFolderAndExpected.extend([len(filteredData[(filteredData['Date 1st Issue_parsed'] <= dateOfAnalysis) & (filteredData['Expected Date_parsed'] <= dateOfAnalysis)])])
+        docExpectedPerFolder.extend([len(filteredData[(filteredData['Expected Date_parsed'] <= dateOfAnalysis)])])
+        docApprExpectedPerFolder.extend([len(filteredData[(filteredData['Expected Approval Date_parsed'] <= dateOfAnalysis)])])
+        docApprRealPerFolder.extend([len(filteredData[(filteredData['Workflow State'].isin(approvedStatus))])])
 
-    data, headers = printResults(foldersEng,docTotalsPerFolder,docExpectedPerFolder,doc1stRevPerFolder,docApprExpectedPerFolder,docApprRealPerFolder,'Total',logger)
+    data, headers = printResults(foldersEng,docTotalsPerFolder,docExpectedPerFolder,doc1stRevPerFolder,doc1stRevPerFolderAndExpected,docApprExpectedPerFolder,docApprRealPerFolder,'Total',logger)
 
     dataPd = pd.DataFrame(data,columns=headers)
     fileTitle = 'FolderPlan_{:04d}_{:02d}_{:02d}_{}_{}_Total.xlsx'.format(dateOfAnalysis.year,dateOfAnalysis.month,dateOfAnalysis.day,project,disciplina)
@@ -187,19 +190,23 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
     listOfTitles.extend(['Total'])
 
     for r in responsibles:
+        dataPerResponsible = bd[(bd['Responsible'] == r) & (bd['Workflow State'] != 'Cancelled')]
         doc1stRevPerFolder = []
         docExpectedPerFolder = []
         docApprExpectedPerFolder = []
         docApprRealPerFolder = []
         docTotalsPerFolder = []
+        doc1stRevPerFolderAndExpected = []
         for f in foldersEng:
-            docTotalsPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Responsible'] == r)])])
-            doc1stRevPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Date 1st Issue_parsed'] <= dateOfAnalysis) & (bd['Responsible'] == r)])])
-            docExpectedPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Expected Date_parsed'] <= dateOfAnalysis) & (bd['Responsible'] == r)])])
-            docApprExpectedPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Expected Approval Date_parsed'] <= dateOfAnalysis) & (bd['Responsible'] == r) ])])
-            docApprRealPerFolder.extend([len(bd[(bd['Folder'] == f) & (bd['Workflow State'].isin(approvedStatus)) & (bd['Responsible'] == r) ])])
+            filteredData = dataPerResponsible[dataPerResponsible['Folder'] == f]
+            docTotalsPerFolder.extend([len(filteredData)])
+            doc1stRevPerFolder.extend([len(filteredData[filteredData['Date 1st Issue_parsed'] <= dateOfAnalysis])])
+            doc1stRevPerFolderAndExpected.extend([len(filteredData[(filteredData['Date 1st Issue_parsed'] <= dateOfAnalysis) & (filteredData['Expected Date_parsed'] <= dateOfAnalysis)])])
+            docExpectedPerFolder.extend([len(filteredData[filteredData['Expected Date_parsed'] <= dateOfAnalysis])])
+            docApprExpectedPerFolder.extend([len(filteredData[filteredData['Expected Approval Date_parsed'] <= dateOfAnalysis])])
+            docApprRealPerFolder.extend([len(filteredData[filteredData['Workflow State'].isin(approvedStatus)])])
 
-        data, headers = printResults(foldersEng,docTotalsPerFolder,docExpectedPerFolder,doc1stRevPerFolder,docApprExpectedPerFolder,docApprRealPerFolder,r,logger)
+        data, headers = printResults(foldersEng,docTotalsPerFolder,docExpectedPerFolder,doc1stRevPerFolder,doc1stRevPerFolderAndExpected,docApprExpectedPerFolder,docApprRealPerFolder,r,logger)
 
         dataPd = pd.DataFrame(data,columns=headers)
 

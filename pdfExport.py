@@ -108,7 +108,7 @@ def exportToPDF(Title,titles,tables,fileTitle,scurvePath,logger):
         pdf.set_font('Arial','',16)
         if i!=0:
             pdf.ln(14)
-        if titles[i].find('SUBCATE') != -1 or titles[i].find('OE') != -1:
+        if titles[i].find('SUBCATE') != -1 or titles[i].find('OE') != -1 or titles[i].find('Contract') != -1:
             pdf.add_page(orientation='landscape')
             fontSize = 5
         pdf.cell(40,10,'Progress {}'.format(titles[i]),)

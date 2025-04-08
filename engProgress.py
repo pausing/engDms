@@ -77,8 +77,9 @@ def atlasdms(condesedInput):
 
     logger.info('{}: OutputRev Start'.format(d))
     start = timer()
-    data.extend([out.reviewOutput(subDirOutput,folders,approvedStatus,dayOfAnalysis,logger,projectFullName,d)[0]])
-    titles.extend(['OE analysis'])
+    oePending, contractorPending, bd = out.reviewOutput(subDirOutput,folders,approvedStatus,dayOfAnalysis,logger,projectFullName,d)
+    data.extend([oePending,contractorPending])
+    titles.extend(['OE analysis','Contractor pending'])
     logger.info('{}: OutputRev Finish: {:.2f} s'.format(d,timer()-start))
 
     logger.info('{}: ExportPDF Start'.format(d))

@@ -113,7 +113,7 @@ def where(location):
 
 
 def colaborativoInformation():
-    approvedStatus = ['Compliant','Compliant with comments','Issued For Construction','Issued For Construction_','Pre analysis','Ready for as built'] 
+    approvedStatus = ['Compliant','Compliant with comments','Issued For Construction','Issued For Construction_','Pre analysis','Ready for as built','For revision'] 
     foldersEng = ['CIVIL','ELECTRICAL','ELECTROMECHANICAL','EQUIPMENT']
     foldersQA = ['CONFORMITY','PROCEDURE']
 
