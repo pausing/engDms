@@ -442,7 +442,6 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
                 disciplinesDF.append(newTotalDiscipline)
                     
             else:
-                totalDiscipline['DISCIP'] = d
                 totalDiscipline = totalDiscipline.drop(columns=totalDiscipline.columns[0])
                 totalDiscipline.loc[len(totalDiscipline),'ITEM'] = 'TOTAL EXPECTED [%]'
                 totalDiscipline.loc[len(totalDiscipline),'ITEM'] = 'TOTAL REAL [%]'
@@ -452,6 +451,7 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
                         totalDiscipline.loc[totalReal,columns[i]] = 100 * (totalDiscipline.loc[issuedReal,columns[i]] * weightIssued + totalDiscipline.loc[appReal,columns[i]] * weightApproved) / totalDiscipline.loc[totalDocs,columns[i]]
                 totalDiscipline.loc[totalExp,'SUM [%]'] = float(totalDiscipline.loc[issuedExp,'SUM [%]']) * weightIssued + float(totalDiscipline.loc[appExp,'SUM [%]']) * weightApproved
                 totalDiscipline.loc[totalReal,'SUM [%]'] = float(totalDiscipline.loc[issuedReal,'SUM [%]']) * weightIssued + float(totalDiscipline.loc[appReal,'SUM [%]']) * weightApproved
+                totalDiscipline['DISCIP'] = d
 
                 disciplinesDF.append(totalDiscipline)
 
