@@ -111,12 +111,9 @@ def generalAnalysisContractorProjects(information):
     foldersEng = gen.colaborativoInformation()[1]
     approvedStatus = gen.colaborativoInformation()[0]
 
-    if  (projectFullName in projectsWithSUP) & (d.find('SUP') != -1):
-        folders = folderSup[projectFullName]
-    else:
-        folders = foldersEng
-
     dataOfProject,disciplinesDF = bck.genReportPerProject(project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,dayOfAnalysis,foldersEng,folderSup,projectsWithSUP)
+    print(dataOfProject)
+    print(disciplinesDF)
     projectScurve = scurve.drawProject(dayOfAnalysis,project,disciplinesContractors[projectsAcroName[projectFullName]],projectFullName,foldersEng,folderSup,projectsWithSUP,approvedStatus)
     projectData = (dataOfProject,disciplinesDF,projectScurve,dayOfAnalysis)
 
@@ -204,3 +201,4 @@ if __name__ == "__main__":
             print('\n')
 
     print('Script finished in {:.2f} min'.format((timer() - iniTime)/60))
+    

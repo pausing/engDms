@@ -366,18 +366,34 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
     if not os.path.exists(dir):
         os.makedirs(dir)
 
-    items = ['TOTAL','ISSUED EXPECTED','ISSUED REAL','APPROVED EXPECTED','APPROVED REAL','TOTAL EXPECTED [%]','TOTAL REAL [%]']
+    items = ['TOTAL','ISSUED EXPECTED','ISSUED REAL','ISSUED REAL FROM EXPECTED','APPROVED EXPECTED','APPROVED REAL','TOTAL EXPECTED [%]','TOTAL REAL [%]']
     columns = ['CIVIL','ELECTRICAL','ELECTROMECHANICAL','EQUIPMENT','SUM','SUM [%]']
     
     iniData = {
         'ITEM': items,
-        'CIVIL': [0,0,0,0,0,0,0],
-        'ELECTRICAL': [0,0,0,0,0,0,0],
-        'ELECTROMECHANICAL': [0,0,0,0,0,0,0],
-        'EQUIPMENT': [0,0,0,0,0,0,0],
-        'SUM': [0,0,0,0,0,0,0],
-        'SUM [%]': [0,0,0,0,0,0,0],
+        'CIVIL': [0 for i in items],
+        'ELECTRICAL': [0 for i in items],
+        'ELECTROMECHANICAL': [0 for i in items],
+        'EQUIPMENT': [0 for i in items],
+        'SUM': [0 for i in items],
+        'SUM [%]': [0 for i in items],
     }
+
+    # Calc of pos of lines
+    # total of docs
+    totalDocs = items.index('TOTAL')
+    # total expected [%] line
+    totalExp = items.index('TOTAL EXPECTED [%]')
+    # total real [%] line
+    totalReal = items.index('TOTAL REAL [%]')
+    # issued expected [numDocs] line
+    issuedExp = items.index('ISSUED EXPECTED')
+    # approved expected [numDocs] line
+    appExp = items.index('APPROVED EXPECTED')
+    # issued real [numDocs] line
+    issuedReal = items.index('ISSUED REAL')
+    # approved real [numDocs] line
+    appReal = items.index('APPROVED REAL')
 
     # ini :
     totalDF = pd.DataFrame(iniData)
@@ -397,17 +413,21 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
 
                 if  (projectFullName in projectsWithSUP) & (d.find('SUP') != -1):
                     newTotalDiscipline = pd.DataFrame(iniData)
-                    for i in range(5): # for lines total, issuedExp, issuedReal, appExp, appReal sum of all equipment folder to equipment category to std format
+                    for i in range(6): # for lines total, issuedExp,issuedExpFromReal, issuedReal, appExp, appReal sum of all equipment folder to equipment category to std format
                         newTotalDiscipline.loc[i,'EQUIPMENT'] = totalDiscipline.loc[i,'SUM']
                         newTotalDiscipline.loc[i,'SUM'] = totalDiscipline.loc[i,'SUM']
                         if i !=0:
                             newTotalDiscipline.loc[i,'SUM [%]'] =  100 * newTotalDiscipline.loc[i,'SUM'] / newTotalDiscipline.loc[0,'SUM']
 
-                    newTotalDiscipline.loc[5,'EQUIPMENT'] = 100 * (newTotalDiscipline.loc[1,'EQUIPMENT'] * weightIssued + newTotalDiscipline.loc[3,'EQUIPMENT'] * weightApproved) / newTotalDiscipline.loc[0,'EQUIPMENT']
-                    newTotalDiscipline.loc[6,'EQUIPMENT'] = 100 * (newTotalDiscipline.loc[2,'EQUIPMENT'] * weightIssued + newTotalDiscipline.loc[4,'EQUIPMENT'] * weightApproved) / newTotalDiscipline.loc[0,'EQUIPMENT']
+                    # calc of total expected in column EQUIPMENT
+                    newTotalDiscipline.loc[totalExp,'EQUIPMENT'] = 100 * (newTotalDiscipline.loc[issuedExp,'EQUIPMENT'] * weightIssued + newTotalDiscipline.loc[appExp,'EQUIPMENT'] * weightApproved) / newTotalDiscipline.loc[totalDocs,'EQUIPMENT']
+                    # calc of total real in column EQUIPMENT
+                    newTotalDiscipline.loc[totalReal,'EQUIPMENT'] = 100 * (newTotalDiscipline.loc[issuedReal,'EQUIPMENT'] * weightIssued + newTotalDiscipline.loc[appReal,'EQUIPMENT'] * weightApproved) / newTotalDiscipline.loc[totalDocs,'EQUIPMENT']
 
-                    newTotalDiscipline.loc[5,'SUM [%]'] = float(newTotalDiscipline.loc[1,'SUM [%]']) * weightIssued + float(newTotalDiscipline.loc[3,'SUM [%]']) * weightApproved
-                    newTotalDiscipline.loc[6,'SUM [%]'] = float(newTotalDiscipline.loc[2,'SUM [%]']) * weightIssued + float(newTotalDiscipline.loc[4,'SUM [%]']) * weightApproved
+                    # calc of total expected in column SUM [%]
+                    newTotalDiscipline.loc[totalExp,'SUM [%]'] = float(newTotalDiscipline.loc[issuedExp,'SUM [%]']) * weightIssued + float(newTotalDiscipline.loc[appExp,'SUM [%]']) * weightApproved
+                    # calc of total real in column SUM [%]
+                    newTotalDiscipline.loc[totalReal,'SUM [%]'] = float(newTotalDiscipline.loc[issuedReal,'SUM [%]']) * weightIssued + float(newTotalDiscipline.loc[appReal,'SUM [%]']) * weightApproved
 
                     newTotalDiscipline['DISCIP'] = d
                     disciplinesDF.append(newTotalDiscipline)
@@ -419,11 +439,11 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
                     totalDiscipline.loc[len(totalDiscipline),'ITEM'] = 'TOTAL REAL [%]'
                     totalDiscipline['DISCIP'] = d
                     for i in range(len(columns)-2): # all of the COLUMNS less SUM and SUM  [%]
-                        if totalDiscipline.loc[0,columns[i]] != 0:
-                            totalDiscipline.loc[5,columns[i]] = 100 * (totalDiscipline.loc[1,columns[i]] * weightIssued + totalDiscipline.loc[3,columns[i]] * weightApproved) / totalDiscipline.loc[0,columns[i]]
-                            totalDiscipline.loc[6,columns[i]] = 100 * (totalDiscipline.loc[2,columns[i]] * weightIssued + totalDiscipline.loc[4,columns[i]] * weightApproved) / totalDiscipline.loc[0,columns[i]]
-                    totalDiscipline.loc[5,'SUM [%]'] = float(totalDiscipline.loc[1,'SUM [%]']) * weightIssued + float(totalDiscipline.loc[3,'SUM [%]']) * weightApproved
-                    totalDiscipline.loc[6,'SUM [%]'] = float(totalDiscipline.loc[2,'SUM [%]']) * weightIssued + float(totalDiscipline.loc[4,'SUM [%]']) * weightApproved
+                        if totalDiscipline.loc[totalDocs,columns[i]] != 0:
+                            totalDiscipline.loc[totalExp,columns[i]] = 100 * (totalDiscipline.loc[issuedExp,columns[i]] * weightIssued + totalDiscipline.loc[appExp,columns[i]] * weightApproved) / totalDiscipline.loc[totalDocs,columns[i]]
+                            totalDiscipline.loc[totalReal,columns[i]] = 100 * (totalDiscipline.loc[issuedReal,columns[i]] * weightIssued + totalDiscipline.loc[appReal,columns[i]] * weightApproved) / totalDiscipline.loc[totalDocs,columns[i]]
+                    totalDiscipline.loc[totalExp,'SUM [%]'] = float(totalDiscipline.loc[issuedExp,'SUM [%]']) * weightIssued + float(totalDiscipline.loc[appExp,'SUM [%]']) * weightApproved
+                    totalDiscipline.loc[totalReal,'SUM [%]'] = float(totalDiscipline.loc[issuedReal,'SUM [%]']) * weightIssued + float(totalDiscipline.loc[appReal,'SUM [%]']) * weightApproved
 
                     disciplinesDF.append(totalDiscipline)
 
@@ -463,15 +483,15 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
     # calculate total real per category, ( 0.7 * issued real (line 1) + 0.3 * approved real (line 3) ) / total (line 0)
 
     for i in range(len(columns)-2): # all of the COLUMNS less SUM and SUM  [%]
-        if totalDF.loc[0,columns[i]] != 0:
-            totalDF.loc[5,columns[i]] = round(100 * (totalDF.loc[1,columns[i]] * weightIssued + totalDF.loc[3,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]],2)
-            totalDF.loc[6,columns[i]] = round(100 * (totalDF.loc[2,columns[i]] * weightIssued + totalDF.loc[4,columns[i]] * weightApproved) / totalDF.loc[0,columns[i]],2)
+        if totalDF.loc[totalDocs,columns[i]] != 0:
+            totalDF.loc[totalExp,columns[i]] = round(100 * (totalDF.loc[issuedExp,columns[i]] * weightIssued + totalDF.loc[appExp,columns[i]] * weightApproved) / totalDF.loc[totalDocs,columns[i]],2)
+            totalDF.loc[totalReal,columns[i]] = round(100 * (totalDF.loc[issuedReal,columns[i]] * weightIssued + totalDF.loc[appReal,columns[i]] * weightApproved) / totalDF.loc[totalDocs,columns[i]],2)
 
-    totalDF.loc[5,'SUM [%]'] = totalDF.loc[1,'SUM [%]'] * weightIssued + totalDF.loc[3,'SUM [%]'] * weightApproved
-    totalDF.loc[6,'SUM [%]'] = totalDF.loc[2,'SUM [%]'] * weightIssued + totalDF.loc[4,'SUM [%]'] * weightApproved
+    totalDF.loc[totalExp,'SUM [%]'] = totalDF.loc[issuedExp,'SUM [%]'] * weightIssued + totalDF.loc[appExp,'SUM [%]'] * weightApproved
+    totalDF.loc[totalReal,'SUM [%]'] = totalDF.loc[issuedReal,'SUM [%]'] * weightIssued + totalDF.loc[appReal,'SUM [%]'] * weightApproved
     
     totalDF['SUM [%]'] = totalDF['SUM [%]'].apply(lambda x : round(x,2))
 
     totalDF.to_excel(os.path.join(dir,'{:04d}{:02d}{:02d}_TOTAL_{}.xlsx'.format(dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day,projectFullName)))
-
+    
     return totalDF, allDiscDF
