@@ -107,7 +107,10 @@ def generalAnalysisContractorProjects(information):
     subDir = os.path.join(project,d,'Input')
     dayOfAnalysis = bck.chooseFile(subDir)[1]
     projectsWithSUP = gen.generalInfo()[4]
-    folderSup = gen.generalInfo()[5]
+    if (projectFullName in projectsWithSUP):
+        folderSup = gen.generalInfo()[5][projectFullName]
+    else:
+        folderSup = []
     foldersEng = gen.colaborativoInformation()[1]
     approvedStatus = gen.colaborativoInformation()[0]
 

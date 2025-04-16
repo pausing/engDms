@@ -233,15 +233,16 @@ def analyzeRespAndCat(fileToAnalyze,project,disciplina,approvedStatus,foldersEng
                 bd.loc[i,title] = date(bd.loc[i,title].year,bd.loc[i,title].month,bd.loc[i,title].day)
 
     #print(bd[bd['Folder'].isin(foldersEng)]['Responsible'])
-    responsibles = list(set(bd[bd['Folder'].isin(foldersEng)]['Responsible']))
-    logger.info('responsibles: {}'.format(responsibles))
-    for r in responsibles:
+    total_responsibles = list(set(bd[bd['Folder'].isin(foldersEng)]['Responsible']))
+    responsibles = []
+    for r in total_responsibles:
         count = len(bd[(bd['Folder'].isin(foldersEng)) & (bd['Responsible'] == r)])
         logger.info('responsible: {}, number of documents {}'.format(r,count))
-        if count == 0:
-            responsibles.remove(r)
+        if count != 0:
+            responsibles.extend([r])
+            logger.info('adding {} to list of responsibles'.format(r))
     responsibles.sort()
-    logger.info('responsibles: {}'.format(responsibles))
+    logger.info('Responsibles: {}'.format(responsibles))
 
     workFlowStatus = list(set(bd['Workflow State']))
     for s in workFlowStatus:

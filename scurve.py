@@ -403,7 +403,7 @@ def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,
     if not os.path.exists(dir):
         os.makedirs(dir)
     
-    minDate = date.today() - timedelta(60)
+    minDate = date.today() - timedelta(30)
     maxDate = date.today() + timedelta(60)
 
     dates = [minDate]
@@ -415,6 +415,14 @@ def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,
 
     weightIssued = 70/100
     weightApproved = 30/100
+
+    # files to review in dates > dayOfAnalysis
+    futureDataFrames = []
+    for d in disciplines:
+        futurePlanningDir = os.path.join(projectDir,d,'Input')
+        file, dayOfFile = bck.chooseFile(futurePlanningDir)
+        df = pd.read_csv(os.path.join(futurePlanningDir,file))
+        futureDataFrames.extend([df])
 
     progressPlanned = []
     progressReal = []
@@ -431,13 +439,15 @@ def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,
             issuedExpected = 0
             approvedExpected = 0
 
-            for d in disciplines:
-                futurePlanningDir = os.path.join(projectDir,d,'Input')
-                file, dayOfFile = bck.chooseFile(futurePlanningDir)
-                df = pd.read_csv(os.path.join(futurePlanningDir,file))
-                bck.parseTimeBD(df,'Expected Date',projectFullName + ' ' + d)
-                bck.parseTimeBD(df,'Expected Approval Date',projectFullName + ' ' + d)
-                dfFiltered = df[df['Folder'].isin(foldersEng)]
+            for j,data in enumerate(futureDataFrames):
+                if (projectFullName in projectsWithSup) & (disciplines[j].find('SUP') != -1):
+                    folders = folderSup
+                else:
+                    folders = foldersEng
+
+                bck.parseTimeBD(data,'Expected Date',projectFullName + ' ' + d)
+                bck.parseTimeBD(data,'Expected Approval Date',projectFullName + ' ' + d)
+                dfFiltered = data[(data['Folder'].isin(folders)) & (data['Workflow State'] != 'Cancelled')]
 
                 total += len(dfFiltered)
                 issuedExpected += len(dfFiltered[(dfFiltered['Expected Date_parsed'].values <= dates[i])])
