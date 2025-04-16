@@ -286,15 +286,18 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
     bck.parseTimeBD(bd,'Expected Approval Date',project + ' ' + discipline)
     bck.parseTimeBD(bd,'Approval Date',project + ' ' + discipline)
 
-    responsibles = list(set(bd['Responsible']))
-    for r in responsibles:
-        count = 0
-        for f in foldersEng:
-            count += len(bd[(bd['Folder'] == f) & (bd['Responsible'] == r)])
-        #print(r,count)
-        if count == 0:
-            responsibles.remove(r)
+    total_responsibles = list(set(bd['Responsible']))
+    logger.info('responsibles in the data frame {}'.format(total_responsibles))
+    logger.info('responsible alternative: {}'.format(list(set(bd[bd['Folder'].isin(foldersEng)]['Responsible']))))
+    responsibles = []
+    for r in total_responsibles:
+        count = len(bd[(bd['Folder'].isin(foldersEng)) & (bd['Responsible'] == r)])
+        logger.info('responsible: {}, number of documents {}'.format(r,count))
+        if count != 0:
+            responsibles.extend([r])
+            logger.info('adding {} to list of responsibles'.format(r))
     responsibles.sort()
+    logger.info('Responsibles: {}'.format(responsibles))
     #print(responsibles)
 
     #minDate = min(list(bd['Expected Date_parsed']))
@@ -413,70 +416,36 @@ def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,
     weightIssued = 70/100
     weightApproved = 30/100
 
-    # calculate data for day after day of analysis
-
-    real = 0
-    total = 0
-    issuedReal = 0
-    approvedReal = 0
-
-    for d in disciplines:
-        futurePlanningDir = os.path.join(projectDir,d,'Input')
-
-        file, dayOfFile = bck.chooseFile(futurePlanningDir)
-        
-        df = pd.read_csv(os.path.join(futurePlanningDir,file))
-        bck.parseTimeBD(df,'Expected Date',projectFullName + ' ' + d)
-        bck.parseTimeBD(df,'Date 1st Issue',projectFullName + ' ' + d)
-        bck.parseTimeBD(df,'Expected Approval Date',projectFullName + ' ' + d)
-        
-        total += len(df[df['Folder'].isin(foldersEng)])
-        issuedReal += len(df[(df['Folder'].isin(foldersEng)) & (df['Date 1st Issue_parsed'] <= dates[i])])
-        approvedReal += len(df[(df['Folder'].isin(foldersEng)) & (df['Workflow State'].isin(approvedStatus))])
-
-    realAfterDayOfAnlysis = 100 * ((weightIssued*issuedReal + weightApproved*approvedReal)/total)
-
     progressPlanned = []
     progressReal = []
 
     for i in range(len(dates)):
         if dates[i] <= dayOfAnalysis:
             totalData = bck.genReportPerProject(projectDir,disciplines,projectFullName,dates[i],foldersEng,folderSup,projectsWithSup)[0]
-            #print('\n----------------------------total data ----------------\n')
-            #print(dates[i])
-            #print(totalData)
-            planned = totalData.loc[1,'SUM [%]'] * weightIssued + totalData.loc[3,'SUM [%]'] * weightApproved
-            real = totalData.loc[2,'SUM [%]'] * weightIssued + totalData.loc[4,'SUM [%]'] * weightApproved
-            #print('\n----------------------------planned and real ----------------\n')
-            #print(planned,real)
+            planned = totalData.loc[1,'SUM [%]'] * weightIssued + totalData.loc[4,'SUM [%]'] * weightApproved
+            real = totalData.loc[2,'SUM [%]'] * weightIssued + totalData.loc[5,'SUM [%]'] * weightApproved
+
         else:
-            #real = 0
             planned = 0
             total = 0
             issuedExpected = 0
-            #issuedReal = 0
             approvedExpected = 0
-            #approvedReal = 0
 
             for d in disciplines:
                 futurePlanningDir = os.path.join(projectDir,d,'Input')
                 file, dayOfFile = bck.chooseFile(futurePlanningDir)
                 df = pd.read_csv(os.path.join(futurePlanningDir,file))
                 bck.parseTimeBD(df,'Expected Date',projectFullName + ' ' + d)
-                #bck.parseTimeBD(df,'Date 1st Issue')
                 bck.parseTimeBD(df,'Expected Approval Date',projectFullName + ' ' + d)
                 dfFiltered = df[df['Folder'].isin(foldersEng)]
 
                 total += len(dfFiltered)
                 issuedExpected += len(dfFiltered[(dfFiltered['Expected Date_parsed'].values <= dates[i])])
-                #issuedReal += len(df[(df['Folder'].isin(foldersEng)) & (df['Date 1st Issue_parsed'] <= dates[i])])
                 approvedExpected += len(dfFiltered[(dfFiltered['Expected Approval Date_parsed'].values <= dates[i])])
-                #approvedReal += len(df[(df['Folder'].isin(foldersEng)) & (df['Workflow State'].isin(approvedStatus))])
 
-            #real = 100 * ((weightIssued*issuedReal + weightApproved*approvedReal)/total)
             planned = 100 * ((weightIssued*issuedExpected + weightApproved*approvedExpected)/total)
 
-            real = realAfterDayOfAnlysis
+            real = progressReal[-1]
 
         if planned == 0:
             if len(progressPlanned) == 0:

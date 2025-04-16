@@ -188,7 +188,7 @@ if __name__ == "__main__":
             # generalAnalysisContractorProjects retruns sum of all data of the project, data of the contractor disciplines, scurve image path and dayOfAnalysis
             projectGenData = pool.map(generalAnalysisContractorProjects,condensedData)
     
-        #expGen.pdfExport_generalReport(condensedData,projectGenData)
+        expGen.pdfExport_generalReport(condensedData,projectGenData)
     
         for i,data in enumerate(projectGenData):
             print(condensedData[i][1])

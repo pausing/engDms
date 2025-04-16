@@ -34,18 +34,18 @@ def projectData_to_pdf(pdf,df,fontSize,tabletitle):
     cols = df.columns
     df.fillna('--',inplace=True)
 
-    numberOfDisciplines = int(len(df)/7)
+    numberOfDisciplines = int(len(df)/8)
     colWithIntNumbers = ['CIVIL','ELECTRICAL','ELECTROMECHANICAL','EQUIPMENT','SUM']
-    rowWithIntNumbersBlockType = [0,1,2,3,4]
+    rowWithIntNumbersBlockType = [0,1,2,3,4,5]
     rowWithIntNumbers = []
     for i in range(numberOfDisciplines):
         for r in rowWithIntNumbersBlockType:
-            rowWithIntNumbers.append(i*7+r)
-    rowWithFloatNumbersBlockType = [5,6]
+            rowWithIntNumbers.append(i*8+r)
+    rowWithFloatNumbersBlockType = [6,7]
     rowWithFloatNumbers = []
     for i in range(numberOfDisciplines):
         for r in rowWithFloatNumbersBlockType:
-            rowWithFloatNumbers.append(i*7+r)
+            rowWithFloatNumbers.append(i*8+r)
     colWithFloatNumbers = ['SUM [%]']
 
     widthCol = []
@@ -111,6 +111,8 @@ def disciplineData_to_table(pdf,df,fontSize,tabletitle):
 #+-------------------+---------+--------------+---------------------+-------------+-------+-----------+
 #| ISSUED REAL       |      66 |           58 |                  51 |         112 |   287 | 95.67     |
 #+-------------------+---------+--------------+---------------------+-------------+-------+-----------+
+#| ISS REAL FROM EXP |      66 |           58 |                  51 |         112 |   287 | 95.67     |
+#+-------------------+---------+--------------+---------------------+-------------+-------+-----------+
 #| APPROVED EXPECTED |      66 |           59 |                  51 |         122 |   298 | 99.33     |
 #+-------------------+---------+--------------+---------------------+-------------+-------+-----------+
 #| APPROVED REAL     |      62 |           56 |                  45 |          86 |   249 | 83.00     |
@@ -121,7 +123,7 @@ def disciplineData_to_table(pdf,df,fontSize,tabletitle):
 #+-------------------+---------+--------------+---------------------+-------------+-------+-----------+
 
     colWithIntNumbers = ['CIVIL','ELECTRICAL','ELECTROMECHANICAL','EQUIPMENT','SUM']
-    rowWithIntNumbers = [0,1,2,3,4]
+    rowWithIntNumbers = [0,1,2,3,4,5]
     colWithFloatNumbers = ['SUM [%]']
 
     table_cell_height = 6
@@ -162,9 +164,9 @@ def disciplineData_to_table(pdf,df,fontSize,tabletitle):
                 value = int(value)
             elif col in colWithFloatNumbers:
                 value = '{:.2f}'.format(value)
-            elif (col == 'SUM') and (row in [5,6]):
+            elif (col == 'SUM') and (row in [6,7]):
                 value = '--'
-            elif (col in ['CIVIL','ELECTRICAL','ELECTROMECHANICAL','EQUIPMENT']) and (row in [5,6]):
+            elif (col in ['CIVIL','ELECTRICAL','ELECTROMECHANICAL','EQUIPMENT']) and (row in [6,7]):
                 value = '{:.2f}'.format(value)
 
                 
@@ -209,7 +211,7 @@ def pdfExport_generalReport(projects,data):
         fontSize = 5
         pdf.cell(40,10,p)
         pdf.ln(10)
-        pdf.cell(40,10,'Expected Progress: {} %, Real Progress: {} %'.format(dataOfProjects[i].loc[5,'SUM [%]'],dataOfProjects[i].loc[6,'SUM [%]']))
+        pdf.cell(40,10,'Expected Progress: {} %, Real Progress: {} %'.format(dataOfProjects[i].loc[6,'SUM [%]'],dataOfProjects[i].loc[7,'SUM [%]']))
         pdf.ln(10)
         disciplineData_to_table(pdf,dataOfProjects[i],fontSize,projectsFullName)
         pdf.ln(10)

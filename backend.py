@@ -153,12 +153,16 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
     bd.to_excel(os.path.join(ExcelDir,fileToAnalyze.split(os.sep)[-1][:-4] + '.xlsx'))
 
     # Check which Responsibles have documents in the Engineering Folders
-    responsibles = list(set(bd['Responsible']))
-    for r in responsibles:
+    total_responsibles = list(set(bd['Responsible']))
+    logger.info('responsibles in the data frame {}'.format(total_responsibles))
+    logger.info('responsible alternative: {}'.format(list(set(bd[bd['Folder'].isin(foldersEng)]['Responsible']))))
+    responsibles = []
+    for r in total_responsibles:
         count = len(bd[(bd['Folder'].isin(foldersEng)) & (bd['Responsible'] == r)])
         logger.info('responsible: {}, number of documents {}'.format(r,count))
-        if count == 0:
-            responsibles.remove(r)
+        if count != 0:
+            responsibles.extend([r])
+            logger.info('adding {} to list of responsibles'.format(r))
     responsibles.sort()
     logger.info('Responsibles: {}'.format(responsibles))
 
