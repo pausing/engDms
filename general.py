@@ -59,7 +59,6 @@ def whichPath(where):
 
     saveDirMac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/Documentos/02_INGENIERIA/07_ProjReport'
     projectsMac = [planDirBESSMac,planDirSHAMac,planDirLCMac,planDirDRAMac,planDirESTMac,planDirEST_2_Mac,planDirCOPMac,planDirCAMMac]
-    #projectsMac = [planDirBESSMac,planDirSHAMac,planDirLCMac,planDirDRAMac,planDirESTMac]
 
     planDirBESSPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Chile\\01_BDD\\02_EXE\\03_ENG\\00_Planning'
     planDirSHAPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Colombia\\05_SHA\\02_EXE\\03_ENG\\00_Planning'
@@ -72,7 +71,6 @@ def whichPath(where):
 
     saveDirPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\Documentos\\02_INGENIERIA\\07_ProjReport'
     projectsPC = [planDirBESSPC,planDirSHAPC,planDirLCPC,planDirDRAPC,planDirESTPC,planDirEST_2PC,planDirCOPPC,planDirCAMPC]
-    #projectsPC = [planDirBESSPC,planDirSHAPC,planDirLCPC,planDirDRAPC,planDirESTPC]
 
     planDirBESSLap = 'C:\\Users\\PabloMaqueda\\OneDrive\\OneDrive - AtlasRen\\docTO\\TO\\Chile\\01_BDD\\02_EXE\\03_ENG\\00_Planning'
     planDirSHALap = 'C:\\Users\\PabloMaqueda\\Onedrive\\OneDrive - AtlasRen\\docTO\\TO\\Colombia\\05_SHA\\02_EXE\\03_ENG\\00_Planning'
@@ -83,6 +81,17 @@ def whichPath(where):
 
     saveDirLap = 'C:\\Users\\PabloMaqueda\\Onedrive\\OneDrive - AtlasRen\\Documentos\\02_INGENIERIA\\07_ProjReport'
     projectsLap = [planDirBESSLap,planDirSHALap,planDirLCLap,planDirDRALap,planDirESTLap,planDirCAMLap]
+
+    planDirBESS_SGS_lap = 'C:\\Users\\González\\OneDrive - Atlas Renewable Energy\\TO\\Chile\\01_BDD\\02_EXE\\03_ENG\\00_Planning'
+    planDirSHA_SGS_lap = 'C:\\Users\\González\\OneDrive - Atlas Renewable Energy\\TO\\Colombia\\05_SHA\\02_EXE\\03_ENG\\00_Planning'
+    planDirLC_SGS_lap = 'C:\\Users\\González\\OneDrive - AtlasRenewable Energy\\TO\\Brazil\\05_LC\\02_EXE\\03_ENG\\00_Planning'
+    planDirDRA_SGS_lap = 'C:\\Users\\González\\\\OneDrive - AtlasRenewable Energy\\TO\\Brazil\\10_DRA\\02_EXE\\03_ENG\\00_Planning'
+    planDirEST_SGS_lap = 'C:\\Users\\González\\\\OneDrive - AtlasRenewable Energy\\TO\\Chile\\07_EST\\02_EXE\\03_ENG\\00_Planning'
+    planDirCAM_SGS_lap = 'C:\\Users\\González\\\\OneDrive - AtlasRenewable Energy\\TO\\Colombia\\06_CAM\\02_EXE\\03_ENG\\00_Planning'
+
+    # poner carpeta de SGS
+    saveDir_SGS_lap = 'C:\\Users\\González\\\\OneDrive - AtlasRen\\Documentos\\02_INGENIERIA\\07_ProjReport'
+    projects_SGS_lap = [planDirBESS_SGS_lap,planDirSHA_SGS_lap,planDirLC_SGS_lap,planDirDRA_SGS_lap,planDirEST_SGS_lap,planDirCAM_SGS_lap]
     
     projects = []
     projectsDict = {}
@@ -102,6 +111,10 @@ def whichPath(where):
         projects = projectsLap
         projectsDict = dict(zip(list(projectsAcroName.values()),projectsLap))
         saveDir = saveDirLap
+    elif where == 'SGS_lap':
+        projects = projects_SGS_lap
+        projectsDict = dict(zip(list(projectsAcroName.values()),projects_SGS_lap))
+        saveDir = saveDir_SGS_lap
 
     return projects, projectsDict, saveDir
 
@@ -110,6 +123,8 @@ def where(location):
         return 'mac'
     if location == 'DESKTOP-00OQQTF':
         return 'pc'
+    if location == 'LAPTOP-MP2C40V0':
+        return 'SGS_lap'
 
 
 def colaborativoInformation():
