@@ -84,13 +84,13 @@ def whichPath(where):
 
     planDirBESS_SGS_lap = 'C:\\Users\\González\\OneDrive - Atlas Renewable Energy\\TO\\Chile\\01_BDD\\02_EXE\\03_ENG\\00_Planning'
     planDirSHA_SGS_lap = 'C:\\Users\\González\\OneDrive - Atlas Renewable Energy\\TO\\Colombia\\05_SHA\\02_EXE\\03_ENG\\00_Planning'
-    planDirLC_SGS_lap = 'C:\\Users\\González\\OneDrive - AtlasRenewable Energy\\TO\\Brazil\\05_LC\\02_EXE\\03_ENG\\00_Planning'
-    planDirDRA_SGS_lap = 'C:\\Users\\González\\\\OneDrive - AtlasRenewable Energy\\TO\\Brazil\\10_DRA\\02_EXE\\03_ENG\\00_Planning'
-    planDirEST_SGS_lap = 'C:\\Users\\González\\\\OneDrive - AtlasRenewable Energy\\TO\\Chile\\07_EST\\02_EXE\\03_ENG\\00_Planning'
-    planDirCAM_SGS_lap = 'C:\\Users\\González\\\\OneDrive - AtlasRenewable Energy\\TO\\Colombia\\06_CAM\\02_EXE\\03_ENG\\00_Planning'
+    planDirLC_SGS_lap = 'C:\\Users\\González\\OneDrive - Atlas Renewable Energy\\TO\\Brazil\\05_LC\\02_EXE\\03_ENG\\00_Planning'
+    planDirDRA_SGS_lap = 'C:\\Users\\González\\\\OneDrive - Atlas Renewable Energy\\TO\\Brazil\\10_DRA\\02_EXE\\03_ENG\\00_Planning'
+    planDirEST_SGS_lap = 'C:\\Users\\González\\\\OneDrive - Atlas Renewable Energy\\TO\\Chile\\07_EST\\02_EXE\\03_ENG\\00_Planning'
+    planDirCAM_SGS_lap = 'C:\\Users\\González\\\\OneDrive - Atlas Renewable Energy\\TO\\Colombia\\06_CAM\\02_EXE\\03_ENG\\00_Planning'
 
     # poner carpeta de SGS
-    saveDir_SGS_lap = 'C:\\Users\\González\\\\OneDrive - AtlasRen\\Documentos\\02_INGENIERIA\\07_ProjReport'
+    saveDir_SGS_lap = 'C:\\Users\\González\\\\OneDrive - Atlas Renewable Energy\\Documentos\\02_INGENIERIA\\07_ProjReport'
     projects_SGS_lap = [planDirBESS_SGS_lap,planDirSHA_SGS_lap,planDirLC_SGS_lap,planDirDRA_SGS_lap,planDirEST_SGS_lap,planDirCAM_SGS_lap]
     
     projects = []
