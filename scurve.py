@@ -80,6 +80,8 @@ def draw(fileToAnalyze,project,disciplina,dateOfAnalysis):
             ax[i,j].set_yticks(np.arange(0,maxVal[2*i+j],5))
     scurvePath = os.path.join(ExcelDir,'scurve {}_{}_{}_{}_{}.png'.format(project,disciplina,dateOfAnalysis.year,dateOfAnalysis.month,dateOfAnalysis.day))
     fig.savefig(scurvePath,bbox_inches='tight')
+    plt.close(fig)
+
     return scurvePath
 
 def approvedPerDay(day,files,approvedStatus,Folders,excelDir,logger):
@@ -355,7 +357,6 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
         colNumber = int(np.ceil(len(Folders)/2))
 
         fig, ax = plt.subplots(2,colNumber,figsize=[3*6.4,3*4.8])
-    
         fig.suptitle('{} // {} // {}: Planned vs Real'.format(project,discipline,r),size='large')
 
         logger.info('start matplotlib Part of responsible {}'.format(r))
@@ -364,33 +365,63 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
         weeks = [-2,-1,1,2,3]
         days = [-7,-6,-5,-4,-3,-2,-1]
 
-        for i in range(2):
-            for j in range(colNumber):
-                ax[i,j].grid(True)
-                ax[i,j].set_title(Folders[2*i+j],size='small')
-                ax[i,j].tick_params(labelsize='x-small')
-                ax[i,j].plot(dates,planned[2*i+j],colors[2*i+j]+'--',linewidth=1,label='{} planned'.format(Folders[2*i+j]))
-                ax[i,j].plot(dates,real[2*i+j],colors[2*i+j],linewidth=1,label='{} real'.format(Folders[2*i+j]))
-                realAtDateOfAnalysis = real[2*i+j][dates.index(dateOfAnalysis)]
-                plannedAtDateOfAnalysis = planned[2*i+j][dates.index(dateOfAnalysis)]
-                ax[i,j].annotate('[{}, Planned: {}]'.format(Folders[2*i+j],plannedAtDateOfAnalysis),(dateOfAnalysis,plannedAtDateOfAnalysis))
-                ax[i,j].annotate('[{}, Issued: {}]'.format(Folders[2*i+j],realAtDateOfAnalysis),(dateOfAnalysis,realAtDateOfAnalysis))
-                ax[i,j].plot([dateOfAnalysis,dateOfAnalysis],[0,maxVal[2*i+j]],'r',linewidth=1,label='Day Of Analysis!')
+        if colNumber > 1: 
+            fig, ax = plt.subplots(2,colNumber,figsize=[3*6.4,3*4.8])
+            fig.suptitle('{} // {} // {}: Planned vs Real'.format(project,discipline,r),size='large')
+            for i in range(2):
+                for j in range(colNumber):
+                    ax[i,j].grid(True)
+                    ax[i,j].set_title(Folders[2*i+j],size='small')
+                    ax[i,j].tick_params(labelsize='x-small')
+                    ax[i,j].plot(dates,planned[2*i+j],colors[2*i+j]+'--',linewidth=1,label='{} planned'.format(Folders[2*i+j]))
+                    ax[i,j].plot(dates,real[2*i+j],colors[2*i+j],linewidth=1,label='{} real'.format(Folders[2*i+j]))
+                    realAtDateOfAnalysis = real[2*i+j][dates.index(dateOfAnalysis)]
+                    plannedAtDateOfAnalysis = planned[2*i+j][dates.index(dateOfAnalysis)]
+                    ax[i,j].annotate('[{}, Planned: {}]'.format(Folders[2*i+j],plannedAtDateOfAnalysis),(dateOfAnalysis,plannedAtDateOfAnalysis))
+                    ax[i,j].annotate('[{}, Issued: {}]'.format(Folders[2*i+j],realAtDateOfAnalysis),(dateOfAnalysis,realAtDateOfAnalysis))
+                    ax[i,j].plot([dateOfAnalysis,dateOfAnalysis],[0,maxVal[2*i+j]],'r',linewidth=1,label='Day Of Analysis!')
+                    for w in weeks:
+                        if w == -1:
+                            ax[i,j].plot([dateOfAnalysis + timedelta(7*w),dateOfAnalysis + timedelta(7*w)],[0,maxVal[2*i+j]],'k--',linewidth=1,label='Week Intervals')
+                        else:
+                            ax[i,j].plot([dateOfAnalysis + timedelta(7*w),dateOfAnalysis + timedelta(7*w)],[0,maxVal[2*i+j]],'k--',linewidth=1)
+                    for d in days:
+                        if d == -1:
+                            ax[i,j].plot([dateOfAnalysis + timedelta(d),dateOfAnalysis + timedelta(d)],[0,maxVal[2*i+j]],'g--',linewidth=1,label='Day Intervals')
+                        else:
+                            ax[i,j].plot([dateOfAnalysis + timedelta(d),dateOfAnalysis + timedelta(d)],[0,maxVal[2*i+j]],'g--',linewidth=1)
+                    ax[i,j].legend(loc='upper left',fontsize='small')
+                    ax[i,j].set_yticks(np.arange(0,maxVal[2*i+j],5))
+        else:
+                fig, ax = plt.subplots(1,colNumber,figsize=[3*6.4,3*4.8])
+                fig.suptitle('{} // {} // {}: Planned vs Real'.format(project,discipline,r),size='large')
+                ax.grid(True)
+                ax.set_title(Folders[0],size='small')
+                ax.tick_params(labelsize='x-small')
+                ax.plot(dates,planned[0],colors[0]+'--',linewidth=1,label='{} planned'.format(Folders[0]))
+                ax.plot(dates,real[0],colors[0],linewidth=1,label='{} real'.format(Folders[0]))
+                realAtDateOfAnalysis = real[0][dates.index(dateOfAnalysis)]
+                plannedAtDateOfAnalysis = planned[0][dates.index(dateOfAnalysis)]
+                ax.annotate('[{}, Planned: {}]'.format(Folders[0],plannedAtDateOfAnalysis),(dateOfAnalysis,plannedAtDateOfAnalysis))
+                ax.annotate('[{}, Issued: {}]'.format(Folders[0],realAtDateOfAnalysis),(dateOfAnalysis,realAtDateOfAnalysis))
+                ax.plot([dateOfAnalysis,dateOfAnalysis],[0,maxVal[0]],'r',linewidth=1,label='Day Of Analysis!')
                 for w in weeks:
                     if w == -1:
-                        ax[i,j].plot([dateOfAnalysis + timedelta(7*w),dateOfAnalysis + timedelta(7*w)],[0,maxVal[2*i+j]],'k--',linewidth=1,label='Week Intervals')
+                        ax.plot([dateOfAnalysis + timedelta(7*w),dateOfAnalysis + timedelta(7*w)],[0,maxVal[0]],'k--',linewidth=1,label='Week Intervals')
                     else:
-                        ax[i,j].plot([dateOfAnalysis + timedelta(7*w),dateOfAnalysis + timedelta(7*w)],[0,maxVal[2*i+j]],'k--',linewidth=1)
+                        ax.plot([dateOfAnalysis + timedelta(7*w),dateOfAnalysis + timedelta(7*w)],[0,maxVal[0]],'k--',linewidth=1)
                 for d in days:
                     if d == -1:
-                        ax[i,j].plot([dateOfAnalysis + timedelta(d),dateOfAnalysis + timedelta(d)],[0,maxVal[2*i+j]],'g--',linewidth=1,label='Day Intervals')
+                        ax.plot([dateOfAnalysis + timedelta(d),dateOfAnalysis + timedelta(d)],[0,maxVal[0]],'g--',linewidth=1,label='Day Intervals')
                     else:
-                        ax[i,j].plot([dateOfAnalysis + timedelta(d),dateOfAnalysis + timedelta(d)],[0,maxVal[2*i+j]],'g--',linewidth=1)
-                ax[i,j].legend(loc='upper left',fontsize='small')
-                ax[i,j].set_yticks(np.arange(0,maxVal[2*i+j],5))
+                        ax.plot([dateOfAnalysis + timedelta(d),dateOfAnalysis + timedelta(d)],[0,maxVal[0]],'g--',linewidth=1)
+                ax.legend(loc='upper left',fontsize='small')
+                ax.set_yticks(np.arange(0,maxVal[0],5))
+
         path = os.path.join(ExcelDir,'scurve {}_{}_{}_{}_{}_{}.jpg'.format(project,discipline,r,dateOfAnalysis.year,dateOfAnalysis.month,dateOfAnalysis.day))
         scurvePath.extend([path])
         fig.savefig(path,bbox_inches='tight')
+        plt.close(fig)
 
         logger.info('finish matplotlib part of responsible {} in {:.2f} s'.format(r,timer()-startGraph))
     logger.info('finish scurve for each responsible in {:.2f} s'.format(timer()-start))

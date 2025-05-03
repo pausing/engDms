@@ -130,7 +130,7 @@ if __name__ == "__main__":
     location = platform.node()
 
     # folder path por projects and folder to save information
-    projects, projectsDict, saveDir = gen.whichPath(gen.where(location))
+    projects, projectsDict, saveDir, projects_rep_Dir = gen.whichPath(gen.where(location))
 
     # let the user decide which project analyze
     projectsFullName = gen.generalInfo()[0]
