@@ -304,8 +304,8 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
 
     #minDate = min(list(bd['Expected Date_parsed']))
     #maxDate = max(list(bd['Expected Date_parsed']))
-    minDate = date.today() - timedelta(30)
-    maxDate = date.today() + timedelta(45)
+    minDate = date.today() - timedelta(60)
+    maxDate = date.today() + timedelta(60)
     #Folders = ['CIVIL','ELECTRICAL','ELECTROMECHANICAL','EQUIPMENT']
     Folders = foldersEng
 
