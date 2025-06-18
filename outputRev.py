@@ -7,11 +7,16 @@ from datetime import timedelta, datetime
 def cleanColumns(file):
     with open(file,'r+',encoding='utf-8') as txtFile:
         buffer = ''
+        k = 0
         for line in txtFile:
             lSplitted = line.strip().split(',')
+            #if k == 0:
+                ##print(lSplitted)
+                ##print(len(lSplitted))
             for i in range(18):
                 buffer = buffer + lSplitted[i] + ','
             buffer = buffer + '\n'
+            k+=1
     #print(buffer)
 
     if file.find('_output') == -1:
@@ -40,20 +45,20 @@ def reviewOutput(directory,folders,approvedStatus,dayOfAnalysis,logger,project,d
     bck.parseTimeBD(bd,'Fisrt Issue Date', p + ' ' + d)
     bck.parseTimeBD(bd,'Last Issue Date', p + ' ' + d)
     bck.parseTimeBD(bd,'Expected Approval Date', p + ' ' + d)
-    bck.parseTimeBD(bd,'Replanned Expected Approval', p + ' ' + d)
+    bck.parseTimeBD(bd,'Replanned Approval Date', p + ' ' + d)
     bd = bd.drop('Expected First Issue Date',axis=1)
     bd = bd.drop('Replanned First Issue Date',axis=1)
     bd = bd.drop('Fisrt Issue Date',axis=1)
     bd = bd.drop('Last Issue Date',axis=1)
     bd = bd.drop('Expected Approval Date',axis=1)
-    bd = bd.drop('Replanned Expected Approval',axis=1)
-    bd = bd.drop('MDL Revision',axis=1)
+    bd = bd.drop('Replanned Approval Date',axis=1)
+    #bd = bd.drop('MDL Revision',axis=1)
     bd = bd.drop('Unnamed: 18',axis=1)
     bd = bd.drop('Approval Date',axis=1)
     bd = bd.drop('Expected First Issue Date_parsed',axis=1)
     bd = bd.drop('Replanned First Issue Date_parsed',axis=1)
     bd = bd.drop('Expected Approval Date_parsed',axis=1)
-    bd = bd.drop('Replanned Expected Approval_parsed',axis=1)
+    bd = bd.drop('Replanned Approval Date_parsed',axis=1)
     bd = bd.drop('Item or Sequence',axis=1)
     for i in range(len(bd)):
         bd.loc[i,'Description'] = bd.loc[i,'Description'][0:40]

@@ -430,9 +430,8 @@ def drawFull(fileToAnalyze,project,discipline,dateOfAnalysis,foldersEng,approved
 
 def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,folderSup,projectsWithSup,approvedStatus):
 
-    dir = os.path.join(projectDir,'00_ProjectReports')
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+    #dir = os.path.join(projectDir,'00_ProjectReports')
+    dir = os.path.join(projectDir,'02_EXE','02_ENG','00_GEN','00_ProjectReports')
     
     minDate = date.today() - timedelta(30)
     maxDate = date.today() + timedelta(60)
@@ -450,7 +449,8 @@ def drawProject(dayOfAnalysis,projectDir,disciplines,projectFullName,foldersEng,
     # files to review in dates > dayOfAnalysis
     futureDataFrames = []
     for d in disciplines:
-        futurePlanningDir = os.path.join(projectDir,d,'Input')
+        #futurePlanningDir = os.path.join(projectDir,d,'Input')
+        futurePlanningDir = os.path.join(projectDir,'02_EXE','02_ENG',d,'00_GEN','04_PLN','02_REP','INPUT')
         file, dayOfFile = bck.chooseFile(futurePlanningDir)
         df = pd.read_csv(os.path.join(futurePlanningDir,file))
         futureDataFrames.extend([df])

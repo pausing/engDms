@@ -14,7 +14,7 @@ import platform
 
 
 def configure_logging(project,d):
-    log_filename = 'log_{}_{}.log'.format(project,d)
+    log_filename = 'log_{}_{}.log'.format(project,os.path.split(d)[1])
     logger = logging.getLogger(project)
     logger.setLevel(logging.INFO)
     # Create file handler for the worker's log file
@@ -34,6 +34,11 @@ def atlasdms(condesedInput):
     logger = configure_logging(projectFullName,d)
 
     # general information
+    if 'EXE' in os.path.split(d)[0]:
+        disciplineName = 'EXE_'+ os.path.split(d)[1]
+    else:
+        disciplineName = 'DEV_'+ os.path.split(d)[1]
+
     projectsAcroName = gen.generalInfo()[1]
     disciplines = gen.generalInfo()[2]
     disciplinesContractors = gen.generalInfo()[3]
@@ -47,8 +52,8 @@ def atlasdms(condesedInput):
     startTotal = timer()
     print('start analysis project: {}, discipline: {}'.format(projectFullName,d))
 
-    subDir = os.path.join(project,d,'Input')
-    subDirOutput = os.path.join(project,d,'Output')
+    subDir = os.path.join(project,d,'00_GEN','04_PLN','02_REP','INPUT')
+    subDirOutput= os.path.join(project,d,'00_GEN','04_PLN','02_REP','OUTPUT')
     bck.parsePlanDir(subDir,logger)
     file, dayOfAnalysis = bck.chooseFile(subDir)
 
@@ -60,24 +65,24 @@ def atlasdms(condesedInput):
 
     logger.info('{}: Analyze File Start'.format(d))
     start = timer()
-    titles, data, engReportFileTitle = bck.analyzeFile(file,subDirOutput,approvedStatus,folders,foldersQA,projectFullName,projectsAcroName[projectFullName],d,dayOfAnalysis,logger)
+    titles, data, engReportFileTitle = bck.analyzeFile(file,subDirOutput,approvedStatus,folders,foldersQA,projectFullName,projectsAcroName[projectFullName],disciplineName,dayOfAnalysis,logger)
     logger.info('{}: Analyze File Finish: {:.2f} s'.format(d,timer()-start))
 
     report = engReportFileTitle
 
     logger.info('{}: Analyze Responsables and Categories Start'.format(d))
     start = timer()
-    titles, data = bck.analyzeRespAndCat(file,projectFullName,d,approvedStatus,folders,titles,data,dayOfAnalysis,logger)
+    titles, data = bck.analyzeRespAndCat(file,projectFullName,disciplineName,approvedStatus,folders,titles,data,dayOfAnalysis,logger)
     logger.info('{}: Analyze Resp and Cat Finish: {:.2f} s'.format(d,timer()-start))
 
     logger.info('{}: Scurve Start'.format(d))
     start = timer()
-    scurvePath = scurve.drawFull(file,projectFullName,d,dayOfAnalysis,folders,approvedStatus,logger)
+    scurvePath = scurve.drawFull(file,projectFullName,disciplineName,dayOfAnalysis,folders,approvedStatus,logger)
     logger.info('{}: SCurve Finish: {:.2f} s'.format(d,timer()-start))
 
     logger.info('{}: OutputRev Start'.format(d))
     start = timer()
-    oePending, contractorPending, bd = out.reviewOutput(subDirOutput,folders,approvedStatus,dayOfAnalysis,logger,projectFullName,d)
+    oePending, contractorPending, bd = out.reviewOutput(subDirOutput,folders,approvedStatus,dayOfAnalysis,logger,projectFullName,disciplineName)
     data.extend([oePending,contractorPending])
     titles.extend(['OE analysis','Contractor pending'])
     logger.info('{}: OutputRev Finish: {:.2f} s'.format(d,timer()-start))
@@ -103,8 +108,9 @@ def generalAnalysisContractorProjects(information):
     disciplinesContractors = gen.generalInfo()[3]
 
     d = disciplinesContractors[projectsAcroName[projectFullName]][0]
+    disciplinePath = os.path.join('02_EXE','02_ENG',disciplinesContractors[projectsAcroName[projectFullName]][0])
     
-    subDir = os.path.join(project,d,'Input')
+    subDir = os.path.join(project,disciplinePath,'00_GEN','04_PLN','02_REP','INPUT')
     dayOfAnalysis = bck.chooseFile(subDir)[1]
     projectsWithSUP = gen.generalInfo()[4]
     if (projectFullName in projectsWithSUP):
@@ -130,11 +136,14 @@ if __name__ == "__main__":
     location = platform.node()
 
     # folder path por projects and folder to save information
-    projects, projectsDict, saveDir, projects_rep_Dir = gen.whichPath(gen.where(location))
+    projectsOrigin, projectsDict, saveDir, projects_rep_Dir = gen.whichPath(gen.where(location))
 
     # let the user decide which project analyze
     projectsFullName = gen.generalInfo()[0]
     projectsAcroName = gen.generalInfo()[1]
+    disciplinesEXE = gen.generalInfo()[6]
+    disciplinesDEV = gen.generalInfo()[7]
+    print('disciplinesDEV',disciplinesDEV)
     disciplinesContractors = gen.generalInfo()[3]
 
     listAcroNames = list(projectsAcroName.values())
@@ -150,11 +159,19 @@ if __name__ == "__main__":
         projects = [projectsDict[projToAnalyze]]
         projectsFullName = [list(projectsAcroName.keys())[list(projectsAcroName.values()).index(projToAnalyze)]]
     
+    print('projects',projects)
+    print('projectsFullName',projectsFullName)
+    
     condensedProjectInformation = []
-    disciplines = gen.generalInfo()[2]
+
     for i in range(len(projectsFullName)):
-        for j in range(len(disciplines[projectsAcroName[projectsFullName[i]]])):
-            condensedProjectInformation.append((projects[i],projectsFullName[i],disciplines[projectsAcroName[projectsFullName[i]]][j]))
+        for j in range(len(disciplinesDEV[projectsAcroName[projectsFullName[i]]])):
+            discip = os.path.join('01_DEV','02_ENG',disciplinesDEV[projectsAcroName[projectsFullName[i]]][j])
+            condensedProjectInformation.append((projects[i],projectsFullName[i],discip))
+
+        for j in range(len(disciplinesEXE[projectsAcroName[projectsFullName[i]]])):
+            discip = os.path.join('02_EXE','02_ENG',disciplinesEXE[projectsAcroName[projectsFullName[i]]][j])
+            condensedProjectInformation.append((projects[i],projectsFullName[i],discip))
 
     with multiprocessing.Pool() as pool:
         reports = pool.map(atlasdms,condensedProjectInformation)
@@ -188,7 +205,7 @@ if __name__ == "__main__":
                 condensedData.append((projects[i],projectsFullName[i]))
 
         with multiprocessing.Pool() as pool:
-            # generalAnalysisContractorProjects retruns sum of all data of the project, data of the contractor disciplines, scurve image path and dayOfAnalysis
+            # generalAnalysisContractorProjects returns sum of all data of the project, data of the contractor disciplines, scurve image path and dayOfAnalysis
             projectGenData = pool.map(generalAnalysisContractorProjects,condensedData)
     
         expGen.pdfExport_generalReport(condensedData,projectGenData)

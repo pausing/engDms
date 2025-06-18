@@ -16,7 +16,7 @@ def formatFile(file_path,logger):
     try:
         with open(file_path,'r+',encoding='utf-8', errors='ignore') as txtFile:
             txt = txtFile.read()
-            logger.info('file: {} opened')
+            logger.info('file: {} opened'.format(file_path))
             if txt.find(';') != -1:
                 logger.info('file wiht ;, replacing')
                 txt = txt.replace(',','_')
@@ -30,7 +30,7 @@ def formatFile(file_path,logger):
         logger.info(f'Failed to open with utf-8 encoding: {str(e)}')
         with open(file_path,'r+',encoding='ISO-8859-1') as txtFile:
             txt = txtFile.read()
-            logger.info('file: {} opened with ISO-8859-1 encoding')
+            logger.info('file: {} opened with ISO-8859-1 encoding'.format(file_path))
             if txt.find(';') != -1:
                 logger.info('file with ;, replacing')
                 txt = txt.replace(',','_')
@@ -140,7 +140,7 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
     listOfTitles = []
 
     # dir to save table of Totals
-    ExcelDir = os.path.join(os.path.dirname(fileToAnalyze),'..','Excel')
+    ExcelDir = os.path.join(os.path.dirname(fileToAnalyze),'..','EXCEL')
     if not os.path.exists(ExcelDir):
         os.mkdir(ExcelDir)
 
@@ -221,7 +221,7 @@ def analyzeFile(fileToAnalyze,subDirOutput,approvedStatus,foldersEng,foldersQA,p
 
 def analyzeRespAndCat(fileToAnalyze,project,disciplina,approvedStatus,foldersEng,titles,Alldata,dayOfAnalysis,logger):
     dateOfAnalysis = dayOfAnalysis
-    ExcelDir = os.path.join(os.path.dirname(fileToAnalyze),'..','Excel')
+    ExcelDir = os.path.join(os.path.dirname(fileToAnalyze),'..','EXCEL')
     bd = pd.read_excel(os.path.join(ExcelDir,fileToAnalyze.split(os.sep)[-1][:-4] + '.xlsx'))
 
     # TODO make generic
@@ -365,10 +365,13 @@ def chooseFile(dir):
 
 def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,foldersEng,folderSup,projectsWithSUP):
 
+    # dirProject is root path of the project
+    # disciplines are the names of the disciplines of contractors
+
     weightIssued = 0.7
     weightApproved = 0.3
 
-    dir = os.path.join(dirProject,'00_ProjectReports')
+    dir = os.path.join(dirProject,'02_EXE','02_ENG','00_GEN','00_ProjectReports')
     if not os.path.exists(dir):
         os.makedirs(dir)
 
@@ -405,8 +408,8 @@ def genReportPerProject(dirProject,disciplines,projectFullName,dayOfAnalysis,fol
     appReal = items.index('APPROVED REAL')
 
     for d in disciplines:
-        subDir = os.path.join(dirProject,d,'Excel')
-        text = 'FolderPlan_{:04d}_{:02d}_{:02d}_{}_{}_Total.xlsx'.format(dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day,projectFullName,d)
+        subDir = os.path.join(dirProject,'02_EXE','02_ENG',d,'00_GEN','04_PLN','02_REP','EXCEL')
+        text = 'FolderPlan_{:04d}_{:02d}_{:02d}_{}_{}_Total.xlsx'.format(dayOfAnalysis.year,dayOfAnalysis.month,dayOfAnalysis.day,projectFullName,'EXE_'+d)
         files = os.listdir(subDir)
         file = None
         try:
