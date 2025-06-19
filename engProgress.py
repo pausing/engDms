@@ -143,7 +143,6 @@ if __name__ == "__main__":
     projectsAcroName = gen.generalInfo()[1]
     disciplinesEXE = gen.generalInfo()[6]
     disciplinesDEV = gen.generalInfo()[7]
-    print('disciplinesDEV',disciplinesDEV)
     disciplinesContractors = gen.generalInfo()[3]
 
     listAcroNames = list(projectsAcroName.values())
@@ -151,14 +150,24 @@ if __name__ == "__main__":
 
     projToAnalyze = input('\nWhich projects do you want to analyze {}:\n'.format(listAcroNames))
     projToAnalyze = projToAnalyze.upper()
+
     print('\nInput received:',projToAnalyze)
     print('\n')
 
+    if projToAnalyze.find(',') != -1:
+        ListOfProjects = projToAnalyze.split(',')
+        projects = []
+        projectsFullName = []
+        for p in ListOfProjects:
+            projects.extend([projectsDict[p]])
+            projectsFullName.extend([list(projectsAcroName.keys())[list(projectsAcroName.values()).index(p)]])
+
     # if no all projects modify list of projects folder and projectsFullName 
-    if projToAnalyze != 'ALL':
+    if projToAnalyze != 'ALL' and not projToAnalyze.find(',') != -1:
         projects = [projectsDict[projToAnalyze]]
         projectsFullName = [list(projectsAcroName.keys())[list(projectsAcroName.values()).index(projToAnalyze)]]
-    
+
+    print('projects to analyse: ')
     print('projects',projects)
     print('projectsFullName',projectsFullName)
     

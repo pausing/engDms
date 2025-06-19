@@ -20,19 +20,19 @@ def generalInfo():
         'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
         'DRA':['01_PV-PRE EXEC','03_PV','04_HV','05_SUP'],
         'EST-1':['03_PV','04_BESS','05_HV','08_EWA-PV','01_PV','02_BESS','03_HV','04_SUP'], # ok
-        'EST-2':['02_BESS_PRE_EXEC','05_SUP'],
-        'COP':['01_PV-PRE EXEC','03_BESS-PRE EXEC'],
+        'EST-2':['03_BESS','01_BESS','02_HV','03_SUP'], # ok
+        'COP':['03_PV','04_BESS'], # ok
         'CAM':['01_PV-PRE EXEC'],
     }
 
     disciplinesEXE = {
-        'BDD':['01_BESS','02_HV_SDD','03_EE_INT'],
+        'BDD':['01_BESS','02_HV_SDD','03_EE_INT'], # ok
         'SHA':['01_PV','02_HV','03_LT'],
         'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
         'DRA':['03_PV','04_HV','05_SUP'],
         'EST-1':['01_PV','02_BESS','03_HV','04_SUP'], # ok
-        'EST-2':['05_SUP'],
-        'COP':[],
+        'EST-2':['01_BESS','02_HV','03_SUP'], # ok
+        'COP':[], # ok
         'CAM':[],
     }
 
@@ -42,8 +42,8 @@ def generalInfo():
         'LC':[],
         'DRA':['01_PV-PRE EXEC'],
         'EST-1':['03_PV','04_BESS','05_HV','08_EWA-PV'], # ok
-        'EST-2':['02_BESS_PRE_EXEC'],
-        'COP':['01_PV-PRE EXEC','03_BESS-PRE EXEC'],
+        'EST-2':['03_BESS'], # ok
+        'COP':['03_PV','04_BESS'], # ok
         'CAM':['01_PV-PRE EXEC'],
 
     }
@@ -53,10 +53,10 @@ def generalInfo():
         'SHA':['01_PV','02_HV','03_LT'],
         'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
         'DRA':['03_PV','04_HV','05_SUP'],
-        'EST-1':['01_PV','02_BESS','03_HV','04_SUP'],
+        'EST-1':['01_PV','02_BESS','03_HV','04_SUP'], # ok
+        'EST-2':['01_BESS','02_HV','03_SUP'], # ok
+        'COP':[], # ok
         'CAM':[],
-        'EST-2':['05_SUP'],
-        'COP':[],
     }
 
     # subFolder for disciplines 05_SUP: LC,DRACO
@@ -100,14 +100,14 @@ def whichPath(where):
 
     # folder path for PMC PC
         # folder path de la informacion del proyecto
-    planDirBESSPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Chile\\01_BDD\\02_EXE\\03_ENG\\00_Planning'
-    planDirSHAPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Colombia\\05_SHA\\02_EXE\\03_ENG\\00_Planning'
-    planDirLCPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Brazil\\05_LC\\02_EXE\\03_ENG\\00_Planning'
-    planDirDRAPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Brazil\\10_DRA\\02_EXE\\03_ENG\\00_Planning'
-    planDirESTPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Chile\\07_EST-1\\02_EXE\\03_ENG\\00_Planning'
-    planDirEST_2PC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Chile\\08_EST-2\\02_EXE\\03_ENG\\00_Planning'
-    planDirCOPPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Chile\\10_COP\\02_EXE\\03_ENG\\00_Planning'
-    planDirCAMPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Colombia\\06_CAM\\02_EXE\\03_ENG\\00_Planning'
+    planDirBESSPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Chile\\01_BDD'
+    planDirSHAPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Colombia\\05_SHA'
+    planDirLCPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Brazil\\05_LC'
+    planDirDRAPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Brazil\\10_DRA'
+    planDirESTPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Chile\\07_EST-1'
+    planDirEST_2PC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Chile\\08_EST-2'
+    planDirCOPPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Chile\\10_COP'
+    planDirCAMPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\dto\\Colombia\\06_CAM'
 
     saveDirPC = 'C:\\Users\\pauma\\OneDrive - AtlasRen\\Documentos\\02_INGENIERIA\\07_ProjReport'
     projectsPC = [planDirBESSPC,planDirSHAPC,planDirLCPC,planDirDRAPC,planDirESTPC,planDirEST_2PC,planDirCOPPC,planDirCAMPC]
