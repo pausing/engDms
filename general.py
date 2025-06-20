@@ -14,6 +14,13 @@ def generalInfo():
         'CAMPANO':'CAM',
     }
 
+    projectPerCountry = {
+        'Brazil': ['LC','DRA'],
+        'Chile': ['BDD','EST-1','EST-2','COP'],
+        'Colombia': ['SHA','CAM'],
+        'Mexico':[],
+    }
+
     disciplines = {
         'BDD':['01_BESS','02_HV_SDD','03_EE_INT'], # ok
         'SHA':['01_PV','02_HV','03_LT'],
@@ -69,7 +76,7 @@ def generalInfo():
         'ESTEPA-2':['POWER_TRANSFORMER'],
     }
 
-    return projectsFullNames, projectsAcroName, disciplines, disciplinesContractors, projectsWithSUP, folderSup, disciplinesEXE, disciplinesDEV
+    return projectsFullNames, projectsAcroName, disciplines, disciplinesContractors, projectsWithSUP, folderSup, disciplinesEXE, disciplinesDEV, projectPerCountry
 
 def whichPath(where):
 
@@ -93,6 +100,8 @@ def whichPath(where):
     repDirEST_2_Mac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/dto/Chile/08_EST-2/02_EXE/03_ENG/00_Reporting'
     repDirCOPMac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/dto/Chile/10_COP/02_EXE/03_ENG/00_Reporting'
     repDirCAMMac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/dto/Colombia/06_CAM/02_EXE/03_ENG/00_Reporting'
+
+    pathGenReport_Mac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/dto/00_General/Reports'
 
     saveDirMac = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/Documentos/02_INGENIERIA/07_ProjReport'
     projectsMac = [planDirBESSMac,planDirSHAMac,planDirLCMac,planDirDRAMac,planDirESTMac,planDirEST_2_Mac,planDirCOPMac,planDirCAMMac]
@@ -163,6 +172,7 @@ def whichPath(where):
         projectsDict = dict(zip(list(projectsAcroName.values()),projectsMac))
         saveDir = saveDirMac
         reportingDir = reportingDir_Mac_lap
+        pathGenReport = pathGenReport_Mac
     elif where == 'pc':
         projects = projectsPC
         projectsDict = dict(zip(list(projectsAcroName.values()),projectsPC))
@@ -177,7 +187,7 @@ def whichPath(where):
         saveDir = saveDir_SGS_lap
         reportingDir = reportingDir_SGS_lap
 
-    return projects, projectsDict, saveDir, reportingDir
+    return projects, projectsDict, saveDir, reportingDir, pathGenReport
 
 def where(location):
     if location == 'Pablos-Laptop.local':

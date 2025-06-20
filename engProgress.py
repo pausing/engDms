@@ -11,6 +11,7 @@ import multiprocessing
 import logging
 import pdf_export_general_rep as expGen
 import platform
+import moveReports
 
 
 def configure_logging(project,d):
@@ -136,7 +137,7 @@ if __name__ == "__main__":
     location = platform.node()
 
     # folder path por projects and folder to save information
-    projectsOrigin, projectsDict, saveDir, projects_rep_Dir = gen.whichPath(gen.where(location))
+    projectsOrigin, projectsDict, saveDir, projects_rep_Dir, genReportsPath = gen.whichPath(gen.where(location))
 
     # let the user decide which project analyze
     projectsFullName = gen.generalInfo()[0]
@@ -185,6 +186,7 @@ if __name__ == "__main__":
     with multiprocessing.Pool() as pool:
         reports = pool.map(atlasdms,condensedProjectInformation)
     
+    pathGenReports = gen.whichPath(gen.where(location))[4]
     for i,r in enumerate(reports):
         completeDir = r
         fileName = completeDir.split(os.sep)[-1]
@@ -193,6 +195,15 @@ if __name__ == "__main__":
             shutil.copy(r,os.path.join(saveDir,fileName))
         except Exception as e:
             print('Error {}, file: {}'.format(e,fileName))
+
+        country = moveReports.countryFromProject(fileName)
+        try:
+            shutil.copy(r,os.path.join(pathGenReports,country,fileName))
+        except Exception as e:
+            print('Error {}, file: {} when copying to gen report folder'.format(e,fileName))
+
+
+        
 
     print('Pdf Reports finished in {:.2f} min'.format((timer() - iniTime)/60))
 

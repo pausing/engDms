@@ -7,8 +7,8 @@ startTime = timer()
 
 planDir = '/Users/paumaq/Library/CloudStorage/OneDrive-AtlasRen/dto/Chile/07_EST-1'
 
-oldDisciplineName = '07_BESS'
-discipline = '02_BESS'
+oldDisciplineName = '08_SUP'
+discipline = '04_SUP'
 
 planDirPoject = os.path.join(planDir,'02_EXE','02_ENG',discipline,'00_GEN','04_PLN','02_REP','EXCEL')
 print(planDirPoject)
@@ -44,7 +44,6 @@ for f in files:
 
             print(f)
             print(f.replace(txtToFind,txtReplaceWith))
-            filesWithTxt.extend([f])
 
             print('endTimeFindText: ',timer()-startTime)
             startTime = timer()
