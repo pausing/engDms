@@ -24,7 +24,7 @@ def generalInfo():
     disciplines = {
         'BDD':['01_BESS','02_HV_SDD','03_EE_INT'], # ok
         'SHA':['01_PV','02_HV','03_LT'],
-        'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
+        'LC':['01_PV-A','02_PV-B','03_HV','04_LT','05_SUP','06_EXT-ACC'], # ok
         'DRA':['01_PV-PRE EXEC','03_PV','04_HV','05_SUP'],
         'EST-1':['03_PV','04_BESS','05_HV','08_EWA-PV','01_PV','02_BESS','03_HV','04_SUP'], # ok
         'EST-2':['03_BESS','01_BESS','02_HV','03_SUP'], # ok
@@ -35,7 +35,7 @@ def generalInfo():
     disciplinesEXE = {
         'BDD':['01_BESS','02_HV_SDD','03_EE_INT'], # ok
         'SHA':['01_PV','02_HV','03_LT'],
-        'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
+        'LC':['01_PV-A','02_PV-B','03_HV','04_LT','05_SUP','06_EXT-ACC'], # ok
         'DRA':['03_PV','04_HV','05_SUP'],
         'EST-1':['01_PV','02_BESS','03_HV','04_SUP'], # ok
         'EST-2':['01_BESS','02_HV','03_SUP'], # ok
@@ -58,7 +58,7 @@ def generalInfo():
     disciplinesContractors = {
         'BDD':['01_BESS','02_HV_SDD','03_EE_INT'],
         'SHA':['01_PV','02_HV','03_LT'],
-        'LC':['01_PV AREA A','02_PV AREA B','03_HV','04_LT','05_SUP'],
+        'LC':['01_PV-A','02_PV-B','03_HV','04_LT','05_SUP','06_EXT-ACC'], # ok
         'DRA':['03_PV','04_HV','05_SUP'],
         'EST-1':['01_PV','02_BESS','03_HV','04_SUP'], # ok
         'EST-2':['01_BESS','02_HV','03_SUP'], # ok
@@ -72,7 +72,7 @@ def generalInfo():
     folderSup = {
         'LUIZ CARLOS':['CHINT','JINKO','NEXTRACKER','STI','SUNGROW','WEG'],
         'DRACO':['TRACKERS','INVERTERS','MODULES','POWER_TRANSFORMERS'],
-        'ESTEPA-1':['INVERTERS','MODULES_LONGI','POWER_TRANSFORMERS','TRACKERS','BESS_SUPPLY'],
+        'ESTEPA-1':['INVERTERS','MODULES_LONGI','MODULES_CHINT','POWER_TRANSFORMERS','TRACKERS','BESS_SUPPLY'],
         'ESTEPA-2':['POWER_TRANSFORMER'],
     }
 
