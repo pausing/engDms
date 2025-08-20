@@ -3,6 +3,17 @@ def generalInfo():
     projectsFullNames = ['BESS DEL DESIERTO','SHANGRILA','LUIZ CARLOS','DRACO','ESTEPA-1','ESTEPA-2','COPIAPO','CAMPANO']
     #projectsFullNames = ['BESS DEL DESIERTO','SHANGRILA','LUIZ CARLOS','DRACO','ESTEPA']
 
+#    projectsAcroName = {
+#        'BESS DEL DESIERTO':'BDD',
+#        'SHANGRILA':'SHA',
+#        'LUIZ CARLOS':'LC',
+#        'DRACO':'DRA',
+#        'ESTEPA-1':'EST-1',
+#        'ESTEPA-2':'EST-2',
+#        'COPIAPO':'COP',
+#        'CAMPANO':'CAM',
+#    }
+
     projectsAcroName = {
         'BESS DEL DESIERTO':'BDD',
         'SHANGRILA':'SHA',
@@ -11,7 +22,6 @@ def generalInfo():
         'ESTEPA-1':'EST-1',
         'ESTEPA-2':'EST-2',
         'COPIAPO':'COP',
-        'CAMPANO':'CAM',
     }
 
     projectPerCountry = {
@@ -25,10 +35,10 @@ def generalInfo():
         'BDD':['01_BESS','02_HV_SDD','03_EE_INT'], # ok
         'SHA':['01_PV','02_HV','03_LT'], # ok
         'LC':['01_PV-A','02_PV-B','03_HV','04_LT','05_SUP','06_EXT-ACC'], # ok
-        'DRA':['01_PV-PRE EXEC','03_PV','04_HV','05_SUP'],
+        'DRA':['01_PV','03_HV','04_SUP'], # ok
         'EST-1':['03_PV','04_BESS','05_HV','08_EWA-PV','01_PV','02_BESS','03_HV','04_SUP'], # ok
         'EST-2':['03_BESS','01_BESS','02_HV','03_SUP'], # ok
-        'COP':['03_PV','04_BESS'], # ok
+        'COP':['03_PV','04_BESS','03_HV','04_SUP'], # ok
         'CAM':['01_PV-PRE EXEC'],
     }
 
@@ -36,18 +46,18 @@ def generalInfo():
         'BDD':['01_BESS','02_HV_SDD','03_EE_INT'], # ok
         'SHA':['01_PV','02_HV','03_LT'], # ok
         'LC':['01_PV-A','02_PV-B','03_HV','04_LT','05_SUP','06_EXT-ACC'], # ok
-        'DRA':['03_PV','04_HV','05_SUP'],
+        'DRA':['01_PV','03_HV','04_SUP'], # ok
         'EST-1':['01_PV','02_BESS','03_HV','04_SUP'], # ok
         'EST-2':['01_BESS','02_HV','03_SUP'], # ok
-        'COP':[], # ok
+        'COP':['03_HV','04_SUP'], # ok
         'CAM':[],
     }
 
     disciplinesDEV = {
         'BDD':[], # ok
         'SHA':[], # ok
-        'LC':[],
-        'DRA':['01_PV-PRE EXEC'],
+        'LC':[], # ok
+        'DRA':[], # ok
         'EST-1':['03_PV','04_BESS','05_HV','08_EWA-PV'], # ok
         'EST-2':['03_BESS'], # ok
         'COP':['03_PV','04_BESS'], # ok
@@ -59,23 +69,23 @@ def generalInfo():
         'BDD':['01_BESS','02_HV_SDD','03_EE_INT'],
         'SHA':['01_PV','02_HV','03_LT'], # ok
         'LC':['01_PV-A','02_PV-B','03_HV','04_LT','05_SUP','06_EXT-ACC'], # ok
-        'DRA':['03_PV','04_HV','05_SUP'],
+        'DRA':['01_PV','03_HV','04_SUP'], # ok
         'EST-1':['01_PV','02_BESS','03_HV','04_SUP'], # ok
         'EST-2':['01_BESS','02_HV','03_SUP'], # ok
-        'COP':[], # ok
+        'COP':['03_HV','04_SUP'], # ok
         'CAM':[],
     }
 
     # subFolder for disciplines 05_SUP: LC,DRACO
     # projects with discipline SUP
-    projectsWithSUP = ['LUIZ CARLOS','DRACO','ESTEPA-1','ESTEPA-2']
+    projectsWithSUP = ['LUIZ CARLOS','DRACO','ESTEPA-1','ESTEPA-2','COPIAPO']
     folderSup = {
         'LUIZ CARLOS':['CHINT','JINKO','NEXTRACKER','STI','SUNGROW','WEG'],
         'DRACO':['TRACKERS','INVERTERS','MODULES','POWER_TRANSFORMERS'],
         'ESTEPA-1':['INVERTERS','MODULES_LONGI','MODULES_CHINT','POWER_TRANSFORMERS','TRACKERS','BESS_SUPPLY'],
         'ESTEPA-2':['POWER_TRANSFORMER'],
+        'COPIAPO':['POWER_TRANSFORMERS','TRACKERS'],
     }
-
     return projectsFullNames, projectsAcroName, disciplines, disciplinesContractors, projectsWithSUP, folderSup, disciplinesEXE, disciplinesDEV, projectPerCountry
 
 def whichPath(where):
